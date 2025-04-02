@@ -13,6 +13,7 @@
     "buffer": "^6.0.3",
     "crypto-browserify": "^3.12.1",
     "ethers": "^6.13.5",
+    "graphql": "^16.10.0",
     "graphql-request": "^7.1.2",
     "https-browserify": "^1.0.0",
     "os-browserify": "^0.3.0",
