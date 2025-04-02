@@ -1,0 +1,460 @@
+/* Import fonts */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Sans:opsz,wght@6,32;7,40&display=swap');
+
+:root {
+  /* Brand Colors */
+  --orange: #EB4B24;      /* Primary CTA & logo applications */
+  --mint: #68A9A3;       /* Accents and graphical elements */
+  --peach: #F5A07C;      /* Background and visual highlights */
+  --light-mint: #B4DBD4; /* Background and visual highlights */
+  --cream: #FEF4EE;      /* Text elements and primary backgrounds */
+  --dark-forest: #112122; /* Text elements and primary backgrounds */
+  --primary-green: #2E7D32;  /* Primary green for header */
+  --light-green: #E8F5E9;   /* Lighter shade for backgrounds */
+
+  /* Web3-Onboard Account Center Styles */
+  --account-center-z-index: 1000;
+  --account-center-position-top: 1rem;
+  --account-center-position-right: 1rem;
+  --account-center-minimized-background: var(--orange);
+  --account-center-maximized-upper-background: var(--orange);
+  --account-center-maximized-network-section: var(--cream);
+  --account-center-maximized-app-info-section: var(--cream);
+  --account-center-minimized-address-color: var(--cream);
+  --account-center-maximized-address-color: var(--dark-forest);
+  --account-center-maximized-account-section-background-hover: var(--light-mint);
+  --account-center-maximized-action-background-hover: var(--light-mint);
+  --account-center-minimized-chain-select-background: var(--cream);
+  --account-center-network-selector-color: var(--orange);
+  --account-center-maximized-network-selector-color: var(--orange);
+  --account-center-minimized-network-selector-color: var(--orange);
+  --account-center-app-btn-text-color: var(--cream);
+  --account-center-app-btn-background: var(--orange);
+  --account-center-app-btn-font-family: 'DM Sans', sans-serif;
+}
+
+body {
+  margin: 0;
+  font-family: 'DM Sans', sans-serif;
+  background-color: var(--cream);
+  color: var(--dark-forest);
+}
+
+.App {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.header {
+  background-color: var(--mint);
+  color: var(--dark-forest);
+  width: 100%;
+  text-align: center;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, var(--peach) 0%, transparent 100%);
+  opacity: 0.1;
+  pointer-events: none;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.header-left {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.header-title-row {
+  display: flex;
+  align-items: center;
+
+}
+
+.logo {
+  height: 5rem; /* 2x the height of the 2.5rem Pledge text */
+  width: auto;
+  object-fit: contain;
+}
+
+.header-left h1 {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 100;
+  margin: 0;
+  font-size: 3rem;
+  color: var(--dark-forest);
+  line-height: 1;
+}
+
+.header-left p {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--dark-forest);
+  opacity: 0.9;
+  padding-left: 1.25rem;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+.connect-prompt {
+  text-align: center;
+  padding: 2rem;
+  background: var(--cream);
+  border-radius: 12px;
+  margin: 1rem 0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.pledge-container {
+  background: var(--cream);
+  padding: 2rem;
+  border-radius: 12px;
+  margin: 2rem;
+  max-width: 600px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--light-mint);
+}
+
+.pledge-container-title {
+  text-align: center;
+}
+
+.connect-button {
+  background-color: var(--cream);
+  color: var(--orange);
+  border: 2px solid var(--cream);
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.connect-button:hover {
+  background-color: transparent;
+  color: var(--cream);
+  transform: translateY(-1px);
+}
+
+.connect-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+button {
+  background-color: var(--orange);
+  color: var(--cream);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+button:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.name-input {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border: 2px solid var(--light-mint);
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.name-input:focus {
+  outline: none;
+  border-color: var(--mint);
+  box-shadow: 0 0 0 2px rgba(104, 169, 163, 0.1);
+}
+
+.pledge-text {
+  font-style: italic;
+  color: var(--dark-forest);
+  margin: 1rem 0;
+  line-height: 1.6;
+}
+
+.success {
+  color: var(--mint);
+  text-align: center;
+  font-weight: 600;
+}
+
+.error-message {
+  background-color: #ffebee;
+  color: #c62828;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  border: 1px solid #ef9a9a;
+  font-family: 'DM Sans', sans-serif;
+}
+
+footer {
+  margin-top: auto;
+  padding: 1rem;
+  color: var(--dark-forest);
+  text-align: center;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.pledge-container h2 {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  color: var(--dark-forest);
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+}
+
+.info-section {
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.info-section p {
+  margin-bottom: 1rem;
+  color: var(--dark-forest);
+  font-size: 1.1rem;
+}
+
+.info-section p:last-child {
+  margin-bottom: 0;
+}
+
+.pledge-text {
+  font-style: italic;
+  color: var(--dark-forest);
+  margin: 1.5rem 0;
+  line-height: 1.6;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+.disclaimer {
+  font-size: 0.9rem;
+  color: var(--dark-forest);
+  opacity: 0.8;
+  margin-top: 1.5rem;
+  font-style: italic;
+}
+
+.pledge-options {
+  margin: 1.5rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.pledge-option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.pledge-option:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.pledge-option input[type="radio"] {
+  width: 1.2rem;
+  height: 1.2rem;
+  cursor: pointer;
+}
+
+.pledge-option span {
+  font-size: 1.1rem;
+  color: var(--dark-forest);
+}
+
+.name-input {
+  font-size: 1.1rem;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--dark-forest);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--dark-forest);
+  width: 200px;
+}
+
+.name-input::placeholder {
+  color: var(--dark-forest);
+  opacity: 0.6;
+}
+
+.previous-pledges-container {
+  background: var(--cream);
+  padding: 2rem;
+  border-radius: 12px;
+  margin: 2rem;
+  max-width: 600px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--light-mint);
+}
+
+.previous-pledges-container h2 {
+  color: var(--dark-forest);
+  font-family: 'Outfit', sans-serif;
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.previous-pledges-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.previous-pledge-item {
+  background: var(--mint);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--light-mint);
+}
+
+.previous-pledge-item p {
+  margin: 0.5rem 0;
+  color: var(--dark-forest);
+  font-size: 1.1rem;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.previous-pledge-item strong {
+  color: var(--dark-forest);
+  font-weight: 600;
+}
+
+.previous-pledge-item a {
+  color: var(--dark-forest);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.previous-pledge-item a:hover {
+  color: var(--forest);
+  text-decoration: underline;
+} 
+
+.pledge-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.form-section {
+  background: var(--light-mint);
+  padding: 1.5rem;
+  border-radius: 8px;
+}
+
+.form-section h3 {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 500;
+  color: var(--dark-forest);
+  margin: 0 0 1rem 0;
+  font-size: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  font-weight: 500;
+  color: var(--dark-forest);
+  font-size: 1rem;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  max-width: 400px;
+  padding: 0.75rem;
+  border: 2px solid var(--light-mint);
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem;
+  background: var(--cream);
+  color: var(--dark-forest);
+  transition: all 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--mint);
+  box-shadow: 0 0 0 2px rgba(104, 169, 163, 0.1);
+}
+
+.form-group select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23112122' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2rem;
+}
+
+.pledge-confirmation {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: var(--peach);
+  border-radius: 8px;
+}
+
+.pledge-text {
+  white-space: pre-wrap;
+  font-family: 'DM Sans', sans-serif;
+  font-style: normal;
+}

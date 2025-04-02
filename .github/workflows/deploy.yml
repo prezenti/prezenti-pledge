@@ -1,0 +1,34 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main  # Trigger on pushes to the main branch
+
+permissions:
+  contents: write  # Required for deploying to gh-pages branch
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set Up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18  # Use a version compatible with your app
+          cache: 'yarn'     # Cache Yarn dependencies for faster builds
+
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile  # Ensures consistent installs
+
+      - name: Build React App
+        run: yarn build
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages  # The branch to deploy to
+          folder: build     # The folder containing the built app

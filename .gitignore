@@ -1,0 +1,37 @@
+# Node.js/Yarn
+node_modules/
+yarn-error.log
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+
+# Build output
+build/
+dist/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Dependency lock files (optional, keep yarn.lock for consistency)
+# package-lock.json  # Exclude if using npm elsewhere, but keep yarn.lock
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# macOS
+.DS_Store
+
+# Editor directories and files
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
