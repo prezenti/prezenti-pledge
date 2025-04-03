@@ -157,7 +157,14 @@ const PreviousPledges = () => {
               </p>
               <p>
                 <strong>Attester:</strong>{' '}
-                {pledge.attester.slice(0, 4)}...{pledge.attester.slice(-4)}
+                <a
+                  href={`https://celo.easscan.org/address/${pledge.attester}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="explorer-link"
+                >
+                  {pledge.attester.slice(0, 4)}...{pledge.attester.slice(-4)}
+                </a>
               </p>
               <p><strong>Timestamp:</strong> {new Date(pledge.timestamp * 1000).toLocaleString()}</p>
             </li>

@@ -78,9 +78,9 @@ function App() {
               <div className="header-left">
                 <div className="header-title-row">
 
-                  <h1>Pledge</h1>
+                <img src="/logo-no-background.svg" alt="Pledge Logo" className="pledge-logo" />
                 </div>
-                <p>Support Celo's sustainable ecosystem</p>
+
               </div>
             </div>
           </header>
