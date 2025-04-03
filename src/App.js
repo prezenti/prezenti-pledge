@@ -28,7 +28,7 @@ const web3Onboard = init({
   },
   accountCenter: {
     desktop: { enabled: true, position: 'topRight', minimal: false },
-    mobile: { enabled: true, position: 'topRight', minimal: false }
+    mobile: { enabled: true, position: 'topRight', minimal: true }
   }
 });
 
@@ -71,15 +71,16 @@ function App() {
         <div className="App">
         <header className="header">
             <div className="header-content">
+            <div className="header-right">
+            <img src="/Prezenti_horizontal logo_ dark forest.svg" alt="Prezenti Logo" className="logo" />
+                <ConnectButton />
+              </div>
               <div className="header-left">
                 <div className="header-title-row">
-                  <img src="/Prezenti_horizontal logo_ dark forest.svg" alt="Prezenti Logo" className="logo" />
+
                   <h1>Pledge</h1>
                 </div>
                 <p>Support Celo's sustainable ecosystem</p>
-              </div>
-              <div className="header-right">
-                <ConnectButton />
               </div>
             </div>
           </header>

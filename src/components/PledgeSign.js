@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useConnectWallet, useWallets } from '@web3-onboard/react';
 import Web3 from 'web3';
 import { usePledgeContext } from '../context/PledgeContext';
@@ -6,7 +6,7 @@ import { usePledgeContext } from '../context/PledgeContext';
 const EAS_CONTRACT_ADDRESS = '0x72E1d8ccf5299fb36fEfD8CC4394B8ef7e98Af92';
 const CELO_GOVERNANCE_ADDRESS = '0xD533Ca259b330c7A88f74E000a3FaEa2d63B7972';
 const CELO_CHAIN_ID = 42220;
-const SCHEMA_UID = '0x0b0f63bd8efc37e0ac267ee03c0857dbf21468ec5a36d51495fd51bdeb6e08a0'; // Correct UID
+const SCHEMA_UID = '0x0b0f63bd8efc37e0ac267ee03c0857dbf21468ec5a36d51495fd51bdeb6e08a0';
 
 function PledgeSign() {
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet();
@@ -17,6 +17,7 @@ function PledgeSign() {
   const [error, setError] = useState(null);
   const [txHash, setTxHash] = useState(null);
   const [attestationUid, setAttestationUid] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
 
   const [pledgor, setPledgor] = useState({
     entityName: '',
@@ -31,15 +32,72 @@ function PledgeSign() {
     paymentFrequency: ''
   });
   const executionDate = new Date().toISOString().split('T')[0];
-  console.log('Current pledges in context:', pledges, 'length:', pledges.length);
   const pledgeId = `PLEDGE-${(pledges.length + 1).toString().padStart(4, '0')}`;
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Validation functions
+  const isValidAddress = (address) => {
+    if (typeof address !== 'string' || address.trim() === '') {
+      return false;
+    }
+    const addressRegex = /^\d+[\s\w]+$/;
+    const cleanedAddress = address.trim();
+    return addressRegex.test(cleanedAddress);
+  };
+
+  const isValidPercentage = (value) => {
+    if (!value.endsWith('%')) return false;
+    const num = parseFloat(value.slice(0, -1));
+    return !isNaN(num) && num >= 0 && num <= 100;
+  };
+
+  const getPaymentFrequencyOptions = () => {
+    switch (pledgeDetails.pledgeType) {
+      case 'Tokens':
+        return [{ value: 'At TGE', label: 'At TGE' }];
+      case 'Revenue':
+        return [
+          { value: '', label: 'Not specified' },
+          { value: 'Annually', label: 'Annually' },
+          { value: 'Quarterly', label: 'Quarterly' },
+          { value: 'Monthly', label: 'Monthly' }
+        ];
+      case 'Both':
+        return [
+          { value: '', label: 'Not specified' },
+          { value: 'At TGE', label: 'At TGE' },
+          { value: 'Annually', label: 'Annually' },
+          { value: 'Quarterly', label: 'Quarterly' },
+          { value: 'Monthly', label: 'Monthly' }
+        ];
+      default:
+        return [];
+    }
+  };
 
   const signPledge = async () => {
     console.log('signPledge called');
-
     if (!pledgor.entityName || !pledgor.entityType || !pledgor.jurisdiction || !pledgeDetails.amountCommitted || !pledgeDetails.pledgeType) {
       setError('Please fill in all required fields');
       console.log('Validation failed:', { pledgor, pledgeDetails });
+      return;
+    }
+
+    if (pledgor.address && !isValidAddress(pledgor.address)) {
+      setError('Please enter a valid address or leave it blank');
+      return;
+    }
+
+    if (!isValidPercentage(pledgeDetails.amountCommitted)) {
+      setError('Amount Committed must be a percentage (e.g., "1%", "50%") between 0 and 100');
       return;
     }
 
@@ -56,9 +114,7 @@ function PledgeSign() {
     try {
       const web3 = new Web3(wallet.provider);
       const chainId = await web3.eth.getChainId();
-      console.log('Current chainId (raw):', chainId, 'type:', typeof chainId);
       const chainIdNum = Number(chainId);
-      console.log('Current chainId (number):', chainIdNum);
       if (chainIdNum !== CELO_CHAIN_ID) {
         throw new Error('Please switch to the Celo network (chain ID 42220)');
       }
@@ -80,7 +136,6 @@ function PledgeSign() {
         governingLaw: "Celo Community Governance",
         disputeResolution: "Celo Governance Proposals and Arbitration"
       };
-      console.log('Pledge data:', pledgeData);
 
       const easAbi = [
         {
@@ -168,8 +223,6 @@ function PledgeSign() {
       ];
 
       const encodedData = web3.eth.abi.encodeParameters(schemaTypes, schemaValues);
-      console.log('Encoded data:', encodedData);
-
       const attestationRequest = {
         schema: SCHEMA_UID,
         data: {
@@ -183,14 +236,12 @@ function PledgeSign() {
       };
 
       const txData = easContract.methods.attest(attestationRequest).encodeABI();
-
       const gasEstimate = await web3.eth.estimateGas({
         from: connectedWallets[0].accounts[0].address,
         to: EAS_CONTRACT_ADDRESS,
         data: txData,
         value: '0x0'
       });
-      console.log('Estimated gas:', gasEstimate);
 
       const tx = {
         from: connectedWallets[0].accounts[0].address,
@@ -200,28 +251,14 @@ function PledgeSign() {
         value: '0x0'
       };
 
-      console.log('Transaction object:', tx);
-
-      try {
-        const txPromise = web3.eth.sendTransaction(tx);
-        txPromise.on('transactionHash', (hash) => {
-          console.log('Transaction hash:', hash);
-          setTxHash(hash);
-        });
-        const txReceipt = await txPromise;
-        console.log('Transaction receipt:', txReceipt);
-        const uid = txReceipt.logs[0]?.topics[1] || 'Check EAS logs for UID';
-        setSigned(true);
-        setAttestationUid(uid);
-      } catch (sendError) {
-        const revertReason = await web3.eth.call(tx, 'latest').catch(err => {
-          console.log('Revert reason raw:', err);
-          const reason = err.reason || err.message || 'Unknown revert reason';
-          if (err.data) console.log('Revert data:', err.data);
-          return reason;
-        });
-        throw new Error(`Transaction reverted: ${revertReason}`);
-      }
+      const txPromise = web3.eth.sendTransaction(tx);
+      txPromise.on('transactionHash', (hash) => {
+        setTxHash(hash);
+      });
+      const txReceipt = await txPromise;
+      const uid = txReceipt.logs[0]?.topics[1] || 'Check EAS logs for UID';
+      setSigned(true);
+      setAttestationUid(uid);
     } catch (error) {
       console.error('Error in signPledge:', error);
       setError(error.message || 'Failed to send pledge');
@@ -230,11 +267,26 @@ function PledgeSign() {
     }
   };
 
+  const truncateHash = (hash) => {
+    if (!hash || typeof hash !== 'string') return hash;
+    if (!isMobile) return hash;
+    return `${hash.slice(0, 6)}...${hash.slice(-4)}`;
+  };
+
+  const formatAddress = (address) => {
+    const truncated = isMobile ? `${address.slice(0, 6)}...${address.slice(-4)}` : address;
+    return `<a href="https://celoscan.io/address/${address}" target="_blank" rel="noopener noreferrer" class="governance-address">${truncated}</a>`;
+  };
+
   const getPledgeText = () => {
+    const formattedAddress = formatAddress(CELO_GOVERNANCE_ADDRESS);
+    const pledgeTypeText = pledgeDetails.pledgeType === 'Both' 
+      ? 'the percentage of both revenue and tokens' 
+      : pledgeDetails.pledgeType.toLowerCase();
     return `Pledge ID: ${pledgeId}\n` +
            `Pledgor: ${pledgor.entityName} (${pledgor.entityType}, ${pledgor.jurisdiction})\n` +
-           `Pledgee: The Celo Community (${CELO_GOVERNANCE_ADDRESS})\n` +
-           `Pledge Details: ${pledgeDetails.amountCommitted} of ${pledgeDetails.pledgeType}` +
+           `Pledgee: The Celo Community (${formattedAddress})\n` +
+           `Pledge Details: ${pledgeDetails.amountCommitted} of ${pledgeTypeText}` +
            `${pledgeDetails.startDate ? ` starting ${pledgeDetails.startDate}` : ''}` +
            `${pledgeDetails.paymentFrequency ? `, paid ${pledgeDetails.paymentFrequency}` : ''}\n` +
            `Executed: ${executionDate}\n` +
@@ -251,16 +303,29 @@ function PledgeSign() {
       ) : signed ? (
         <div className="success">
           <p>Thank you for signing the pledge!</p>
-          <p>Transaction hash: {txHash}</p>
-          <p>Attestation UID: {attestationUid}</p>
+          <p>
+            Transaction hash:{' '}
+            <a
+              href={`https://celoscan.io/tx/${txHash}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {truncateHash(txHash)}
+            </a>
+          </p>
+          <p>
+            Attestation UID:{' '}
+            <a
+              href={`https://celo.easscan.org/attestation/view/${attestationUid}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {truncateHash(attestationUid)}
+            </a>
+          </p>
         </div>
       ) : (
-        <form className="pledge-form">
-          <div className="form-group">
-            <label>Pledge ID (Auto-generated)</label>
-            <input className="name-input" type="text" value={pledgeId} disabled />
-          </div>
-
+        <form className="pledge-form" onSubmit={(e) => { e.preventDefault(); signPledge(); }}>
           <div className="form-section">
             <h3>Pledgor Details</h3>
             <div className="form-group">
@@ -271,6 +336,7 @@ function PledgeSign() {
                 value={pledgor.entityName}
                 onChange={(e) => setPledgor({...pledgor, entityName: e.target.value})}
                 placeholder="Enter entity name"
+                required
               />
             </div>
             <div className="form-group">
@@ -281,16 +347,19 @@ function PledgeSign() {
                 value={pledgor.entityType}
                 onChange={(e) => setPledgor({...pledgor, entityType: e.target.value})}
                 placeholder="e.g., LLC, Corporation"
+                required
               />
             </div>
             <div className="form-group">
               <label>Jurisdiction</label>
               <input
                 className="name-input"
+                type AscendantLink
                 type="text"
                 value={pledgor.jurisdiction}
                 onChange={(e) => setPledgor({...pledgor, jurisdiction: e.target.value})}
                 placeholder="e.g., Delaware, USA"
+                required
               />
             </div>
             <div className="form-group">
@@ -300,12 +369,12 @@ function PledgeSign() {
                 type="text"
                 value={pledgor.address}
                 onChange={(e) => setPledgor({...pledgor, address: e.target.value})}
-                placeholder="Enter address"
+                placeholder="e.g., 123 Main St"
               />
             </div>
           </div>
 
-          <div className="form-section">
+          <div className="form-section pledge-details-section">
             <h3>Pledge Details</h3>
             <div className="form-group">
               <label>Amount Committed</label>
@@ -315,6 +384,7 @@ function PledgeSign() {
                 value={pledgeDetails.amountCommitted}
                 onChange={(e) => setPledgeDetails({...pledgeDetails, amountCommitted: e.target.value})}
                 placeholder="e.g., 1%"
+                required
               />
             </div>
             <div className="form-group">
@@ -322,7 +392,8 @@ function PledgeSign() {
               <select
                 className="name-input"
                 value={pledgeDetails.pledgeType}
-                onChange={(e) => setPledgeDetails({...pledgeDetails, pledgeType: e.target.value})}
+                onChange={(e) => setPledgeDetails({...pledgeDetails, pledgeType: e.target.value, paymentFrequency: ''})}
+                required
               >
                 <option value="Revenue">Revenue</option>
                 <option value="Tokens">Tokens</option>
@@ -345,10 +416,9 @@ function PledgeSign() {
                 value={pledgeDetails.paymentFrequency}
                 onChange={(e) => setPledgeDetails({...pledgeDetails, paymentFrequency: e.target.value})}
               >
-                <option value="">Not specified</option>
-                <option value="Annually">Annually</option>
-                <option value="Quarterly">Quarterly</option>
-                <option value="Monthly">Monthly</option>
+                {getPaymentFrequencyOptions().map(option => (
+                  <option key={option.value} value={option.value}>{option.label}</option>
+                ))}
               </select>
             </div>
             <p className="disclaimer">Note: Start Date and Payment Frequency are optional and may be specified later if not known at this time.</p>
@@ -364,11 +434,11 @@ function PledgeSign() {
 
           {wallet && (
             <div className="pledge-confirmation">
-              <pre className="pledge-text">{getPledgeText()}</pre>
+              <pre className="pledge-text" dangerouslySetInnerHTML={{ __html: getPledgeText() }} />
             </div>
           )}
 
-          <button type="button" onClick={signPledge} disabled={loading}>
+          <button type="submit" disabled={loading}>
             {loading ? 'Signing...' : 'Sign Pledge'}
           </button>
         </form>
