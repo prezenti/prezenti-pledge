@@ -117,6 +117,13 @@ const PreviousPledges = () => {
     }
   };
 
+  const formatPledgeType = (pledgeType) => {
+    if (pledgeType === 'Both') {
+      return 'revenue and tokens';
+    }
+    return pledgeType || ''; // Fallback to empty string if pledgeType is undefined
+  };
+
   useEffect(() => {
     fetchPledges();
   }, []); // Runs once on mount
@@ -139,10 +146,17 @@ const PreviousPledges = () => {
             <li key={index} className="previous-pledge-item">
               <p><strong>Pledge ID:</strong> {pledge.pledgeData?.pledgeId || 'N/A'}</p>
               <p><strong>Pledgor:</strong> {pledge.pledgeData?.pledgor.entityName} ({pledge.pledgeData?.pledgor.entityType}, {pledge.pledgeData?.pledgor.jurisdiction})</p>
-              <p><strong>Pledge:</strong> {pledge.pledgeData?.pledgeDetails.amountCommitted} of {pledge.pledgeData?.pledgeDetails.pledgeType}
-                {pledge.pledgeData?.pledgeDetails.startDate ? ` starting ${pledge.pledgeData?.pledgeDetails.startDate}` : ''}
-                {pledge.pledgeData?.pledgeDetails.paymentFrequency ? `, paid ${pledge.pledgeData?.pledgeDetails.paymentFrequency}` : ''}
-              </p>
+              <p>
+              <strong>Pledge:</strong>{' '}
+              {pledge.pledgeData?.pledgeDetails.amountCommitted}{' '}
+              of {formatPledgeType(pledge.pledgeData?.pledgeDetails.pledgeType)}
+              {pledge.pledgeData?.pledgeDetails.startDate
+                ? ` starting ${pledge.pledgeData?.pledgeDetails.startDate}`
+                : ''}
+              {pledge.pledgeData?.pledgeDetails.paymentFrequency
+                ? `, paid ${pledge.pledgeData?.pledgeDetails.paymentFrequency}`
+                : ''}
+            </p>
               <p><strong>Executed:</strong> {pledge.pledgeData?.executionDetails.executionDate}</p>
               <p>
                 <strong>Attestation UID:</strong>{' '}

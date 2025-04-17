@@ -30,12 +30,12 @@
   --account-center-minimized-network-selector-color: var(--orange);
   --account-center-app-btn-text-color: var(--cream);
   --account-center-app-btn-background: var(--orange);
-  --account-center-app-btn-font-family: 'Outfit', sans-serif;;
+  --account-center-app-btn-font-family: 'DM Sans', sans-serif;;
 }
 
 body {
   margin: 0;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'DM Sans', sans-serif;
   font-weight: 100; /* Regular weight for body text */
   background-color: var(--cream);
   color: var(--dark-forest);
@@ -99,13 +99,13 @@ body {
 }
 
 .pledge-logo {
-  height: 100px;
+  height: 40px;
   width: auto;
   object-fit: contain;
 }
 
 .header-left h1 {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'DM Sans', sans-serif;
   font-weight: 100; /* Thin weight for a lighter, elegant look */
   margin: 0;
   font-size: 2.5rem;
@@ -115,7 +115,7 @@ body {
 
 .header-left p {
   margin: 0;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'DM Sans', sans-serif;
   font-weight: 100;
   font-size: 1rem;
   color: var(--dark-forest);
@@ -159,7 +159,7 @@ body {
   padding: 0.32rem 0.75rem;
   border-radius: 8px;
   cursor: pointer;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'DM Sans', sans-serif;
   font-size: 1rem;
   font-weight: 100;
   transition: all 0.2s ease;
@@ -184,7 +184,7 @@ button {
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
   cursor: pointer;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'DM Sans', sans-serif;
   font-size: 1rem;
   font-weight: 100;
   transition: all 0.2s ease;
@@ -214,7 +214,7 @@ button:disabled {
 }
 
 .form-section h3 {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'DM Sans', sans-serif;
   font-weight: 100;
   color: var(--dark-forest);
   margin: 0 0 1rem 0;
@@ -229,7 +229,7 @@ button:disabled {
 }
 
 .form-group label {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'DM Sans', sans-serif;
   font-weight: 100;
   color: var(--dark-forest);
   font-size: 1rem;
@@ -242,7 +242,7 @@ button:disabled {
   padding: 0.75rem;
   border: 2px solid var(--light-mint);
   border-radius: 8px;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'DM Sans', sans-serif;
   font-size: 1rem;
   font-weight: 100;
   background: var(--cream);
@@ -279,7 +279,7 @@ button:disabled {
 }
 
 .pledge-confirmation pre {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'DM Sans', sans-serif;
   font-weight: 100;
   color: var(--dark-forest);
   margin: 0;
@@ -288,7 +288,7 @@ button:disabled {
 
 .pledge-text {
   white-space: pre-wrap;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'DM Sans', sans-serif;
   font-weight: 100;
   color: var(--dark-forest);
   margin: 1rem 0;
@@ -309,7 +309,7 @@ button:disabled {
   border-radius: 8px;
   margin-bottom: 1rem;
   border: 1px solid #ef9a9a;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'DM Sans', sans-serif;
   font-weight: 100;
 }
 
@@ -318,14 +318,14 @@ footer {
   padding: 1rem;
   color: var(--dark-forest);
   text-align: center;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'DM Sans', sans-serif;
   font-size: 0.9rem;
   font-weight: 100;
   opacity: 0.8;
 }
 
 .pledge-container h2 {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'DM Sans', sans-serif;
   font-weight: 400;
   color: var(--dark-forest);
   margin-bottom: 1.5rem;
@@ -340,7 +340,7 @@ footer {
 
 .info-section p {
   margin-bottom: 1rem;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'DM Sans', sans-serif;
   font-weight: 100;
   color: var(--dark-forest);
 
@@ -352,7 +352,7 @@ footer {
 }
 
 .disclaimer {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'DM Sans', sans-serif;
   font-size: 0.9rem;
   font-weight: 100;
   color: var(--dark-forest);
@@ -389,7 +389,7 @@ footer {
 }
 
 .pledge-option span {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'DM Sans', sans-serif;
   font-size: 1.1rem;
   font-weight: 100;
   color: var(--dark-forest);
@@ -407,7 +407,7 @@ footer {
 
 .previous-pledges-container h2 {
   color: var(--dark-forest);
-  font-family: 'Outfit', sans-serif;
+  font-family: 'DM Sans', sans-serif;
   font-weight: 400;
   font-size: 2rem;
   margin-bottom: 2rem;
@@ -430,7 +430,7 @@ footer {
 
 .previous-pledge-item p {
   margin: 0.5rem 0;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'DM Sans', sans-serif;
   font-weight: 100;
   color: var(--dark-forest);
   font-size: 1.1rem;
@@ -439,13 +439,13 @@ footer {
 }
 
 .previous-pledge-item strong {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'DM Sans', sans-serif;
   font-weight: 400;
   color: var(--dark-forest);
 }
 
 .previous-pledge-item a {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'DM Sans', sans-serif;
   font-weight: 100;
   color: var(--dark-forest);
   text-decoration: none;
@@ -494,7 +494,7 @@ footer {
   }
 
   .pledge-logo {
-    height: 80px;
+    height: 40px;
   }
 
   .header-left h1 {
@@ -554,7 +554,7 @@ footer {
   }
 
   .pledge-logo {
-    height: 60px;
+    height: 20px;
   }
 
   .header-left h1 {

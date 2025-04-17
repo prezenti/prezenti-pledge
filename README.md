@@ -40,6 +40,9 @@ Ready to make a commitment to Celo’s ecosystem? Follow these steps:
 5. **Need Help?**  
    If you encounter issues, check the [Troubleshooting](#troubleshooting) section or contact us via [GitHub Issues](https://github.com/prezenti/prezenti-pledge/issues).
 
+
+---
+
 ## For Developers: Getting Started
 
 ### Prerequisites
@@ -52,3 +55,70 @@ Ready to make a commitment to Celo’s ecosystem? Follow these steps:
    ```bash
    git clone https://github.com/prezenti/prezenti-pledge.git
    cd prezenti-pledge
+   ```
+
+---
+
+## Smart Contract Schema
+
+Each Prezenti Pledge is encoded and submitted using the following structured schema. This ensures consistency and transparency in how pledge data is recorded on-chain.
+
+```solidity
+(string pledgeId,
+ (string entityName, string entityType, string jurisdiction, string entityAddress) pledgor,
+ (string name, address addr) pledgee,
+ (string amountCommitted, string pledgeType, string startDate, string paymentFrequency) pledgeDetails,
+ (string executionDate) executionDetails,
+ string governingLaw,
+ string disputeResolution)
+```
+
+The corresponding JSON schema used by the application to encode this data before submission:
+
+```json
+{
+  "name": "Celo Community Pledge",
+  "schema": [
+    {"name": "pledgeId", "type": "string"},
+    {
+      "name": "pledgor",
+      "type": "tuple",
+      "components": [
+        {"name": "entityName", "type": "string"},
+        {"name": "entityType", "type": "string"},
+        {"name": "jurisdiction", "type": "string"},
+        {"name": "address", "type": "string"}
+      ]
+    },
+    {
+      "name": "pledgee",
+      "type": "tuple",
+      "components": [
+        {"name": "name", "type": "string"},
+        {"name": "address", "type": "string"}
+      ]
+    },
+    {
+      "name": "pledgeDetails",
+      "type": "tuple",
+      "components": [
+        {"name": "amountCommitted", "type": "string"},
+        {"name": "pledgeType", "type": "string"},
+        {"name": "startDate", "type": "string"},
+        {"name": "paymentFrequency", "type": "string"}
+      ]
+    },
+    {
+      "name": "executionDetails",
+      "type": "tuple",
+      "components": [
+        {"name": "executionDate", "type": "string"}
+      ]
+    },
+    {"name": "governingLaw", "type": "string"},
+    {"name": "disputeResolution", "type": "string"}
+  ]
+}
+```
+
+This schema is critical for submitting structured attestations on Celo and can be reused by other tools or dApps aiming to interact with Prezenti pledges.

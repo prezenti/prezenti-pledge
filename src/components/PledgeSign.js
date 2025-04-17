@@ -45,12 +45,29 @@ function PledgeSign() {
 
   // Validation functions
   const isValidAddress = (address) => {
+    // Step 1: Check if input is a non-empty string
     if (typeof address !== 'string' || address.trim() === '') {
       return false;
     }
-    const addressRegex = /^\d+[\s\w]+$/;
+  
     const cleanedAddress = address.trim();
-    return addressRegex.test(cleanedAddress);
+  
+    // Step 2: Regex to allow common address characters
+    // - Letters (a-z, A-Z), digits (0-9), spaces, commas, periods, hyphens, hashtags, slashes, apostrophes
+    // - At least one non-whitespace character
+    const addressRegex = /^[a-zA-Z0-9\s,.#'-\/]+$/;
+  
+    // Step 3: Additional checks
+    // - Ensure at least one letter or digit to avoid purely punctuation
+    const hasLetterOrDigit = /[a-zA-Z0-9]/.test(cleanedAddress);
+    // - Prevent excessive punctuation (e.g., "----" or ",,,,")
+    const hasExcessivePunctuation = /[,.\-#\/]{3,}/.test(cleanedAddress);
+  
+    return (
+      addressRegex.test(cleanedAddress) &&
+      hasLetterOrDigit &&
+      !hasExcessivePunctuation
+    );
   };
 
   const isValidPercentage = (value) => {
@@ -296,7 +313,7 @@ function PledgeSign() {
   return (
     <div className="pledge-container">
       <h2 className="pledge-container-title">Take the Pledge</h2>
-      {error && <div className="error-message">{error}</div>}
+      
 
       {!wallet ? (
         <div className="connect-prompt">Please connect your wallet to sign the pledge.</div>
@@ -441,6 +458,7 @@ function PledgeSign() {
           <button type="submit" disabled={loading}>
             {loading ? 'Signing...' : 'Sign Pledge'}
           </button>
+          {error && <div className="error-message">{error}</div>}
         </form>
       )}
     </div>

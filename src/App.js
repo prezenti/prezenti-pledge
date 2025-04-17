@@ -78,7 +78,7 @@ function App() {
               <div className="header-left">
                 <div className="header-title-row">
 
-                <img src="/logo-no-background.svg" alt="Pledge Logo" className="pledge-logo" />
+                <img src="/logo-no-background-copy.svg" alt="Pledge Logo" className="pledge-logo" />
                 </div>
 
               </div>
@@ -86,7 +86,8 @@ function App() {
           </header>
           <main>
             <div className="pledge-container" style={{ textAlign: 'center' }}>
-              <h2>The Prezenti Pledge: A Commitment to Celo</h2>
+              <h2>The Prezenti Pledge</h2>
+              <h2>A Commitment to Celo</h2>
               <div className="info-section">
                 <p>The Celo Community Fund has fueled innovation, backing projects that push the ecosystem forward. But it won't last forever. The Prezenti Pledge is a way for grantees to give back—ensuring the fund continues to support builders like you.</p>
                 <p>By committing 1% of future revenue or tokens from your Token Generation Event (TGE), you're not just saying thanks—you're investing in the future of Celo. This is a commitment between you and the community that helped you get here. It's transparent, on-chain, and built to sustain the ecosystem for the long run.</p>
