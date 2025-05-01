@@ -63,6 +63,8 @@ Ready to make a commitment to Celo’s ecosystem? Follow these steps:
 
 Each Prezenti Pledge is encoded and submitted using the following structured schema. This ensures consistency and transparency in how pledge data is recorded on-chain.
 
+Registered Schema: [`0xbd7d42cc769568e7f9e4a8f28d1492b214b82072f7ff3b6dacb57268ff8020b4`](https://celo.easscan.org/schema/view/0xbd7d42cc769568e7f9e4a8f28d1492b214b82072f7ff3b6dacb57268ff8020b4)
+
 ```solidity
 (
   string pledgeId,
