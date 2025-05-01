@@ -64,13 +64,31 @@ Ready to make a commitment to Celo’s ecosystem? Follow these steps:
 Each Prezenti Pledge is encoded and submitted using the following structured schema. This ensures consistency and transparency in how pledge data is recorded on-chain.
 
 ```solidity
-(string pledgeId,
- (string entityName, string entityType, string jurisdiction, string entityAddress) pledgor,
- (string name, address addr) pledgee,
- (string amountCommitted, string pledgeType, string startDate, string paymentFrequency) pledgeDetails,
- (string executionDate) executionDetails,
- string governingLaw,
- string disputeResolution)
+(
+  string pledgeId,
+  (
+    string entityName,
+    string entityType,
+    string jurisdiction,
+    string entityAddress
+  ) pledgor,
+  (
+    string name,
+    address addr
+  ) pledgee,
+  (
+    string amountCommitted,
+    string pledgeType,
+    string startDate,
+    string paymentFrequency,
+    string notes
+  ) pledgeDetails,
+  (
+    string executionDate
+  ) executionDetails,
+  string governingLaw,
+  string disputeResolution
+)
 ```
 
 The corresponding JSON schema used by the application to encode this data before submission:
@@ -79,46 +97,48 @@ The corresponding JSON schema used by the application to encode this data before
 {
   "name": "Celo Community Pledge",
   "schema": [
-    {"name": "pledgeId", "type": "string"},
+    { "name": "pledgeId", "type": "string" },
     {
       "name": "pledgor",
       "type": "tuple",
       "components": [
-        {"name": "entityName", "type": "string"},
-        {"name": "entityType", "type": "string"},
-        {"name": "jurisdiction", "type": "string"},
-        {"name": "address", "type": "string"}
+        { "name": "entityName", "type": "string" },
+        { "name": "entityType", "type": "string" },
+        { "name": "jurisdiction", "type": "string" },
+        { "name": "entityAddress", "type": "string" }
       ]
     },
     {
       "name": "pledgee",
       "type": "tuple",
       "components": [
-        {"name": "name", "type": "string"},
-        {"name": "address", "type": "string"}
+        { "name": "name", "type": "string" },
+        { "name": "addr", "type": "address" }
       ]
     },
     {
       "name": "pledgeDetails",
       "type": "tuple",
       "components": [
-        {"name": "amountCommitted", "type": "string"},
-        {"name": "pledgeType", "type": "string"},
-        {"name": "startDate", "type": "string"},
-        {"name": "paymentFrequency", "type": "string"}
+        { "name": "amountCommitted", "type": "string" },
+        { "name": "pledgeType", "type": "string" },
+        { "name": "startDate", "type": "string" },
+        { "name": "paymentFrequency", "type": "string" },
+        { "name": "notes", "type": "string" }
       ]
     },
     {
       "name": "executionDetails",
       "type": "tuple",
       "components": [
-        {"name": "executionDate", "type": "string"}
+        { "name": "executionDate", "type": "string" }
       ]
     },
-    {"name": "governingLaw", "type": "string"},
-    {"name": "disputeResolution", "type": "string"}
+    { "name": "governingLaw", "type": "string" },
+    { "name": "disputeResolution", "type": "string" }
   ]
 }
+
 ```
 
 This schema is critical for submitting structured attestations on Celo and can be reused by other tools or dApps aiming to interact with Prezenti pledges.

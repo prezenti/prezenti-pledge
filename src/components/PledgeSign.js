@@ -6,7 +6,7 @@ import { usePledgeContext } from '../context/PledgeContext';
 const EAS_CONTRACT_ADDRESS = '0x72E1d8ccf5299fb36fEfD8CC4394B8ef7e98Af92';
 const CELO_GOVERNANCE_ADDRESS = '0xD533Ca259b330c7A88f74E000a3FaEa2d63B7972';
 const CELO_CHAIN_ID = 42220;
-const SCHEMA_UID = '0x0b0f63bd8efc37e0ac267ee03c0857dbf21468ec5a36d51495fd51bdeb6e08a0';
+const SCHEMA_UID = '0xbd7d42cc769568e7f9e4a8f28d1492b214b82072f7ff3b6dacb57268ff8020b4';
 
 function PledgeSign() {
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet();

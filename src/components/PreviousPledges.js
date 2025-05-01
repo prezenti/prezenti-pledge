@@ -4,7 +4,7 @@ import { usePledgeContext } from '../context/PledgeContext';
 import { ethers } from 'ethers';
 
 const EAS_SUBGRAPH_URL = 'https://celo.easscan.org/graphql';
-const SCHEMA_ID = '0x0b0f63bd8efc37e0ac267ee03c0857dbf21468ec5a36d51495fd51bdeb6e08a0';
+const SCHEMA_ID = '0xbd7d42cc769568e7f9e4a8f28d1492b214b82072f7ff3b6dacb57268ff8020b4';
 
 const PreviousPledges = () => {
   const { addPledge, pledges } = usePledgeContext();
