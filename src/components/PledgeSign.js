@@ -298,7 +298,7 @@ function PledgeSign() {
   const getPledgeText = () => {
     const formattedAddress = formatAddress(CELO_GOVERNANCE_ADDRESS);
     const pledgeTypeText = pledgeDetails.pledgeType === 'Both' 
-      ? 'the percentage of both revenue and tokens' 
+      ? 'the percentage of both revenue(revenue minus expenses) and tokens' 
       : pledgeDetails.pledgeType.toLowerCase();
     return `Pledge ID: ${pledgeId}\n` +
            `Pledgor: ${pledgor.entityName} (${pledgor.entityType}, ${pledgor.jurisdiction})\n` +
@@ -412,7 +412,7 @@ function PledgeSign() {
                 onChange={(e) => setPledgeDetails({...pledgeDetails, pledgeType: e.target.value, paymentFrequency: ''})}
                 required
               >
-                <option value="Revenue">Revenue</option>
+                <option value="Revenue">Revenue(revenue minus expenses)</option>
                 <option value="Tokens">Tokens</option>
                 <option value="Both">Both</option>
               </select>

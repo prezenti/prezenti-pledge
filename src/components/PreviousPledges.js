@@ -119,7 +119,7 @@ const PreviousPledges = () => {
 
   const formatPledgeType = (pledgeType) => {
     if (pledgeType === 'Both') {
-      return 'revenue and tokens';
+      return 'revenue(revenue minus expenses) and tokens';
     }
     return pledgeType || ''; // Fallback to empty string if pledgeType is undefined
   };

@@ -72,7 +72,7 @@ function App() {
         <header className="header">
             <div className="header-content">
             <div className="header-right">
-            <img src="/Prezenti_horizontal logo_ dark forest.svg" alt="Prezenti Logo" className="logo" />
+            <a href='https://prezenti.xyz'><img src="/Prezenti_horizontal logo_ dark forest.svg" alt="Prezenti Logo" className="logo" /></a>
                 <ConnectButton />
               </div>
               <div className="header-left">
@@ -90,7 +90,7 @@ function App() {
               <h2>A Commitment to Celo</h2>
               <div className="info-section">
                 <p>The Celo Community Fund has fueled innovation, backing projects that push the ecosystem forward. But it won't last forever. The Prezenti Pledge is a way for grantees to give back—ensuring the fund continues to support builders like you.</p>
-                <p>By committing 1% of future revenue or tokens from your Token Generation Event (TGE), you're not just saying thanks—you're investing in the future of Celo. This is a commitment between you and the community that helped you get here. It's transparent, on-chain, and built to sustain the ecosystem for the long run.</p>
+                <p>By committing 1% of future revenue(revenue minus expenses) or tokens from your Token Generation Event (TGE), you're not just saying thanks—you're investing in the future of Celo. This is a commitment between you and the community that helped you get here. It's transparent, on-chain, and built to sustain the ecosystem for the long run.</p>
                 <p>The time to act is now. Let's keep Celo growing—together.</p>
               </div>
             </div>
