@@ -108,3 +108,24 @@ schema:
   A signed on-chain attestation reciting a revenue percentage with a cap and an
   expiry has the shape of an instrument whatever the text says. That question
   should be answered before the first attestation is written, not after.
+
+
+## Counterparty and expiry
+
+`PREZENTI_RECIPIENT` is Prezenti's approved long-lived Safe,
+`0xA5c9389A0Ce1bFe24FF883E761Ff313225C77D44` — verified on Celo as a Gnosis
+Safe v1.3.0, 2-of-3. It is deliberately *not* `0x8E3C938C…10Dbae`, which is the
+historical hot/swap wallet slated for retirement: that address demonstrated
+historical control, which is not the same thing as being a suitable
+counterparty for a 36-month commitment.
+
+The expiry is derived from `cohortEnd` plus `sunsetMonths` rather than
+hardcoded, and it is now applied in two places that previously disagreed:
+
+- the `expiresAt` **schema field**, and
+- the attestation's own **`expirationTime`**, which was left at `0`. That made
+  the on-chain object perpetual while the data inside it claimed a 36-month
+  sunset. A field describing an expiry is not an expiry.
+
+`trialSchemaReady()` fails closed unless the schema UID is set, both recipients
+are valid addresses, and the derived expiry is in the future.

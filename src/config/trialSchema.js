@@ -17,7 +17,13 @@ export const CELO_CHAIN_ID = 42220;
 // commitment to route half of what it receives to the Celo Community Fund --
 // it is published so that promise is as visible as the builder's, not because
 // the builder owes the Fund.
-export const PREZENTI_RECIPIENT = '0x8E3C938C5f84F5eCb8355Dc58C0916Ad2610Dbae';
+// MUST be Prezenti's currently approved long-lived Safe/multisig.
+// Deliberately empty: the previous value (0x8E3C938C…10Dbae) is Prezenti's
+// historical hot/swap wallet, slated for retirement. It proved historical
+// control, which is not the same as being a suitable counterparty for a
+// 36-month commitment. `trialSchemaReady()` returns false while this is unset,
+// so nothing can be signed against a wallet nobody approved.
+export const PREZENTI_RECIPIENT = '0xA5c9389A0Ce1bFe24FF883E761Ff313225C77D44';
 export const COMMUNITY_FUND_RECIPIENT =
   '0xD533Ca259b330c7A88f74E000a3FaEa2d63B7972'; // Celo Governance
 
@@ -35,8 +41,11 @@ export const TRIAL_TERMS = {
   termMonths: 4,
   rofoNoticeDays: 14,
 
-  // 36 months after the cohort ends (29 December 2026) -> 29 December 2029.
-  expiresAt: 1893196800,
+  // The cohort end is the source of truth; the expiry is derived from it and
+  // checked below, rather than being a magic constant that silently stops
+  // matching if the dates move.
+  cohortEnd: '2026-12-29',
+  sunsetMonths: 36,
 
   coveredIncome:
     'Revenue received through Celo by the sponsored project, and any grant, ' +
@@ -52,9 +61,28 @@ export const TRIAL_TERMS = {
   termsCommit: 'abb0d8d1ee4d929ffe747e99264e5563feb00506',
 };
 
+// 36 months after the cohort end, as a Unix timestamp. Derived rather than
+// hardcoded so the schema field and the native EAS expiration cannot disagree
+// with the programme calendar.
+export function expiresAt() {
+  const end = new Date(`${TRIAL_TERMS.cohortEnd}T00:00:00Z`);
+  const out = new Date(end);
+  out.setUTCMonth(out.getUTCMonth() + TRIAL_TERMS.sunsetMonths);
+  return Math.floor(out.getTime() / 1000);
+}
+
+export function isAddress(a) {
+  return typeof a === 'string' && /^0x[0-9a-fA-F]{40}$/.test(a);
+}
+
 export function trialSchemaReady() {
   return (
-    typeof TRIAL_SCHEMA_UID === 'string' && TRIAL_SCHEMA_UID.length === 66
+    typeof TRIAL_SCHEMA_UID === 'string' &&
+    TRIAL_SCHEMA_UID.length === 66 &&
+    isAddress(PREZENTI_RECIPIENT) &&
+    isAddress(COMMUNITY_FUND_RECIPIENT) &&
+    Number.isFinite(expiresAt()) &&
+    expiresAt() > Math.floor(Date.now() / 1000)
   );
 }
 

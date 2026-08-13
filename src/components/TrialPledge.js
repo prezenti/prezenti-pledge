@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useConnectWallet } from '@web3-onboard/react';
 import Web3 from 'web3';
+import { ATTESTED_EVENT_ABI, uidFromReceipt } from '../lib/attestation';
 import {
   TRIAL_SCHEMA_UID,
   EAS_CONTRACT_ADDRESS,
@@ -10,6 +11,7 @@ import {
   TRIAL_TERMS,
   trialSchemaReady,
   trialTermsConsistent,
+  expiresAt,
 } from '../config/trialSchema';
 
 const EAS_ABI = [
@@ -42,7 +44,9 @@ const EAS_ABI = [
     stateMutability: 'payable',
     type: 'function',
   },
+  ATTESTED_EVENT_ABI,
 ];
+
 
 // Mirrors the registered schema exactly. If these drift, the attestation
 // encodes bytes nothing can decode -- which is what happened to all 29
@@ -123,7 +127,7 @@ function TrialPledge() {
         COMMUNITY_FUND_RECIPIENT,
         TRIAL_TERMS.communityFundBasisPoints,
         TRIAL_TERMS.capUsd,
-        TRIAL_TERMS.expiresAt,
+        expiresAt(),
         Number(monthsFunded),
         TRIAL_TERMS.coveredIncome,
         TRIAL_TERMS.rofoNoticeDays,
@@ -137,7 +141,10 @@ function TrialPledge() {
         schema: TRIAL_SCHEMA_UID,
         data: {
           recipient: PREZENTI_RECIPIENT,
-          expirationTime: 0,
+          // The attestation itself must expire, not just carry a field saying
+          // it does. Leaving this at 0 made the on-chain object perpetual
+          // while the schema claimed a 36-month sunset.
+          expirationTime: expiresAt(),
           revocable: true,
           refUID:
             '0x0000000000000000000000000000000000000000000000000000000000000000',
@@ -147,10 +154,7 @@ function TrialPledge() {
       };
       const receipt = await eas.methods.attest(request).send({ from });
       setTxHash(receipt.transactionHash);
-      const log = receipt.logs?.find(
-        (l) => l.address?.toLowerCase() === EAS_CONTRACT_ADDRESS.toLowerCase()
-      );
-      setUid(log?.topics?.[1] || null);
+      setUid(uidFromReceipt(receipt, EAS_CONTRACT_ADDRESS));
     } catch (e) {
       setError(e.message || String(e));
     } finally {
@@ -220,7 +224,7 @@ function TrialPledge() {
           </li>
           <li>
             Expires{' '}
-            {new Date(TRIAL_TERMS.expiresAt * 1000).toISOString().slice(0, 10)}.
+            {new Date(expiresAt() * 1000).toISOString().slice(0, 10)}.
           </li>
           <li>
             Pro-rated by months you actually take. Leave early and you owe
