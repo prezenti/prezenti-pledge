@@ -3,6 +3,7 @@ import React from 'react';
 import { Web3OnboardProvider, init, useConnectWallet } from '@web3-onboard/react';
 import injectedModule from '@web3-onboard/injected-wallets';
 import PledgeSign from './components/PledgeSign';
+import TrialPledge from './components/TrialPledge';
 import PreviousPledges from './components/PreviousPledges';
 import { PledgeProvider } from './context/PledgeContext';
 import './styles/App.css';
@@ -46,7 +47,23 @@ function ConnectButton() {
   );
 }
 
+// Hash routing rather than a router: the generic pledge keeps its URL exactly
+// as it is, `#/trial` reaches the sponsorship flow, and GitHub Pages needs no
+// 404 fallback because the path never changes.
+function useIsTrialRoute() {
+  const [isTrial, setIsTrial] = React.useState(
+    () => window.location.hash.startsWith('#/trial')
+  );
+  React.useEffect(() => {
+    const onHash = () => setIsTrial(window.location.hash.startsWith('#/trial'));
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
+  return isTrial;
+}
+
 function App() {
+  const isTrial = useIsTrialRoute();
   const [pledgeData, setPledgeData] = React.useState({
     pledgeId: '',
     pledgor: { entityName: '', entityType: '', jurisdiction: '', address: '' },
@@ -85,6 +102,10 @@ function App() {
             </div>
           </header>
           <main>
+            {isTrial ? (
+              <TrialPledge />
+            ) : (
+            <>
             <div className="pledge-container" style={{ textAlign: 'center' }}>
               <h2>The Prezenti Pledge</h2>
               <h2>A Commitment to Celo</h2>
@@ -101,6 +122,8 @@ function App() {
               </div>
             )}
             <PreviousPledges />
+            </>
+            )}
           </main>
           <footer>
             <p>© 2025 Prezenti - Building a sustainable Celo ecosystem</p>
