@@ -54,9 +54,13 @@ stronger, it just makes it impossible to correct.
 Notes on specific fields:
 
 - **Basis points, not percent strings.** `giveBackBasisPoints = 200` is 2%.
-  Splitting into `prezentiBasisPoints = 100` and
-  `communityFundBasisPoints = 100` records both legs explicitly, and the three
-  should be asserted to agree at signing time.
+  **This is the whole of the builder's obligation and it runs to Prezenti
+  only.** `prezentiBasisPoints = 200`. `communityFundBasisPoints = 100`
+  records *Prezenti's* separate onward commitment to route half of what it
+  receives to the Celo Community Fund -- it is not something the builder owes
+  the Fund. The terms used to read "1% to Prezenti and 1% to the Celo Community
+  Fund", which asked a builder to owe a third party they have no agreement
+  with. See `docs/LEGAL_GAPS.md` in prezenti/talent-engine.
 - **`termsUri` + `termsHash`** pin the exact wording. This is what makes the
   attestation mean something specific rather than reciting prose on-chain: the
   hash is of the versioned `docs/SPONSORSHIP_TERMS.md` in
@@ -84,11 +88,15 @@ rather than writing to the wrong schema.
 ## Before any of this goes live
 
 `docs/LEGAL_GAPS.md` in `prezenti/talent-engine` lists eight open questions,
-three of which land directly on this schema: whether the attestation creates an
-enforceable obligation, whether the Celo Community Fund leg is a commitment to
-the Fund or a statement of intent, and what governing law and dispute
-resolution should say. The current values —
-`governingLaw = "Celo Community Governance"` and
-`disputeResolution = "Celo Governance Proposals and Arbitration"` — are almost
-certainly wrong for an obligation running from a builder to Prezenti, and they
-should not be carried into the new schema by default.
+Most of that list is now closed by drafting. Two things still land on this
+schema:
+
+- **Governing law and dispute resolution are deliberately absent.** The old
+  values (`"Celo Community Governance"` and `"Celo Governance Proposals and
+  Arbitration"`) are not carried forward and the new schema has no field for
+  them. Naming a forum for a commitment nobody intends to enforce implies the
+  opposite of what is meant.
+- **Whether the disclaimer holds is still open** (question A in LEGAL_GAPS).
+  A signed on-chain attestation reciting a revenue percentage with a cap and an
+  expiry has the shape of an instrument whatever the text says. That question
+  should be answered before the first attestation is written, not after.

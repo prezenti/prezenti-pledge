@@ -10,9 +10,13 @@ export const TRIAL_SCHEMA_UID = '';
 
 export const TRIAL_TERMS = {
   programId: 'prezenti-sponsorship-trial',
-  giveBackBasisPoints: 200,          // 2% total
-  prezentiBasisPoints: 100,          // 1% to Prezenti
-  communityFundBasisPoints: 100,     // 1% to the Celo Community Fund
+  // The builder's obligation, in full, and it runs to Prezenti only.
+  giveBackBasisPoints: 200,          // 2%
+  prezentiBasisPoints: 200,          // all of it
+  // Prezenti's *own* onward commitment: half of what it receives is routed to
+  // the Celo Community Fund. Recorded here so it is as public as the builder's
+  // half, but it is not something the builder owes the Fund.
+  communityFundBasisPoints: 100,
   capUsd: 14000,                     // ten times the sponsorship
   rofoNoticeDays: 14,
   coveredIncome:
