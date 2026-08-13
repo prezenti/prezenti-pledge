@@ -10,7 +10,7 @@ The Prezenti Pledge is a commitment to contribute to Celo’s mission of creatin
 
 - **Wallet Integration**: Connect your Celo wallet seamlessly.
 - **Pledge Signing**: Sign the general Prezenti Pledge with customizable details.
-- **Trial Pledge**: `https://pledge.prezenti.xyz/#/trial` records the AI Builder Sponsorships pledge against the current talent-engine terms release.
+- **Trial Pledge**: `https://pledge.prezenti.xyz/#/trial` records the mandatory public AI Builder Sponsorships pledge against the current talent-engine terms release, and supports builder-signed close-out/revocation.
 - **Pledge History**: View a list of previous pledges with links to the Celo explorer.
 
 ## For Pledgers: How to Sign the Pledge

@@ -1,13 +1,13 @@
 import { TRIAL_TERMS, trialTermsConsistent } from '../config/trialSchema';
 
 const CURRENT_TERMS_HASH =
-  '0x33487d54a6719e9976731f5959d0dd4cf17e7a17abde347922461ca3fa022fe6';
+  '0x36e52079f1f90f70ca72b385e6ab727b3dda223870bed7cd36d79cd5f93632d1';
 
 test('pins the current talent-engine terms release', () => {
-  expect(TRIAL_TERMS.termsVersion).toBe('33487d54a671');
+  expect(TRIAL_TERMS.termsVersion).toBe('36e52079f1f9');
   expect(TRIAL_TERMS.termsHash).toBe(CURRENT_TERMS_HASH);
   expect(TRIAL_TERMS.termsUri).toContain(
-    'docs/terms/prezenti-sponsorship-trial-2026-08-13.md'
+    'docs/terms/prezenti-sponsorship-trial-2026-08-13-v2.md'
   );
 });
 

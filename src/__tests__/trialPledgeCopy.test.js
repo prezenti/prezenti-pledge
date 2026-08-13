@@ -20,4 +20,15 @@ test('pledge copy states the onward commitment correctly', () => {
   );
   expect(source).toContain('half of what it receives');
   expect(source).toContain('covered income');
+  expect(source).toContain('No 0xSplits collector');
+});
+
+test('close-out flow signs replacement and revokes original', () => {
+  const source = fs.readFileSync(
+    path.join(__dirname, '..', 'components', 'TrialPledge.js'),
+    'utf8'
+  );
+  expect(source).toContain('Sign replacement and revoke original');
+  expect(source).toContain('refUID');
+  expect(source).toContain('revoke(revocationRequest(originalUid))');
 });

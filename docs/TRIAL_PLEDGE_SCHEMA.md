@@ -20,10 +20,10 @@ Celo EAS indexer:
    existing 29 cannot be repaired, and `revocable: false` means they cannot be
    withdrawn either.
 2. **The counterparty is hardcoded** to "The Celo Community" at the Celo
-   Governance address. The trial give-back runs 2% to Prezenti only, while
-   Prezenti separately routes half of what it receives onward to the Celo
-   Community Fund — equivalent to 1% of covered income. Neither relationship is
-   expressible in the old schema.
+   Governance address. The trial give-back runs 2% to Prezenti only, paid
+   directly to the verified Prezenti Safe, while Prezenti separately routes half
+   of what it receives onward to the Celo Community Fund — equivalent to 1% of
+   covered income. Neither relationship is expressible in the old schema.
 3. **There is nowhere to put the terms.** No cap, no sunset, no pro-rating, no
    covered-income definition, no ROFO, no recipient, no programme identifier.
    Putting them in `amountCommitted` as prose gives a pledge nobody can parse.
@@ -57,7 +57,8 @@ Notes on specific fields:
 
 - **Basis points, not percent strings.** `giveBackBasisPoints = 200` is 2%.
   **This is the whole of the builder's obligation and it runs to Prezenti
-  only.** `prezentiBasisPoints = 200`. `communityFundBasisPoints = 100`
+  only, paid directly to the verified Prezenti Safe.**
+  `prezentiBasisPoints = 200`. `communityFundBasisPoints = 100`
   records *Prezenti's* separate onward commitment as basis points of covered
   income: half of Prezenti's receipts, equivalent to 1% of covered income. It is
   not something the builder owes the Fund. The terms used to read "1% to
@@ -73,8 +74,9 @@ Notes on specific fields:
 - **`monthsFundedAtSigning`** remains in the registered schema but is `0` for
   the initial acceptance pledge. Actual months are known only at withdrawal or
   term end, recorded in the engine's operating ledger as `months_funded`, and
-  carried by a replacement close-out attestation that references the original
-  UID.
+  carried by a builder-signed replacement close-out attestation that references
+  the original UID. The builder then revokes the superseded original UID unless
+  delegated revocation authority exists.
 - **`coveredIncome`** is free text on purpose — it is the one term that will be
   argued about, and forcing it into an enum would hide the argument.
 
@@ -140,7 +142,7 @@ hardcoded, and it is now applied in two places that previously disagreed:
 are valid addresses, and the derived expiry is in the future.
 
 Initial attestations use `monthsFundedAtSigning = 0`. Withdrawal, term end,
-cap satisfaction, expiry and material correction are handled by a replacement
-attestation that references the prior UID, followed by revocation of the
-superseded UID. The app must not ask an applicant to choose funded months at
-acceptance.
+cap satisfaction, expiry and material correction are handled by a builder-signed
+replacement attestation that references the prior UID, followed by builder
+revocation of the superseded UID. The app must not ask an applicant to choose
+funded months at acceptance.
