@@ -20,8 +20,10 @@ Celo EAS indexer:
    existing 29 cannot be repaired, and `revocable: false` means they cannot be
    withdrawn either.
 2. **The counterparty is hardcoded** to "The Celo Community" at the Celo
-   Governance address. The trial give-back runs 1% to Prezenti and 1% to the
-   Celo Community Fund — two legs, two parties, neither expressible.
+   Governance address. The trial give-back runs 2% to Prezenti only, while
+   Prezenti separately routes half of what it receives onward to the Celo
+   Community Fund — equivalent to 1% of covered income. Neither relationship is
+   expressible in the old schema.
 3. **There is nowhere to put the terms.** No cap, no sunset, no pro-rating, no
    covered-income definition, no ROFO, no recipient, no programme identifier.
    Putting them in `amountCommitted` as prose gives a pledge nobody can parse.
@@ -56,19 +58,23 @@ Notes on specific fields:
 - **Basis points, not percent strings.** `giveBackBasisPoints = 200` is 2%.
   **This is the whole of the builder's obligation and it runs to Prezenti
   only.** `prezentiBasisPoints = 200`. `communityFundBasisPoints = 100`
-  records *Prezenti's* separate onward commitment to route half of what it
-  receives to the Celo Community Fund -- it is not something the builder owes
-  the Fund. The terms used to read "1% to Prezenti and 1% to the Celo Community
-  Fund", which asked a builder to owe a third party they have no agreement
-  with. See `docs/LEGAL_GAPS.md` in prezenti/talent-engine.
+  records *Prezenti's* separate onward commitment as basis points of covered
+  income: half of Prezenti's receipts, equivalent to 1% of covered income. It is
+  not something the builder owes the Fund. The terms used to read "1% to
+  Prezenti and 1% to the Celo Community Fund", which asked a builder to owe a
+  third party they have no agreement with. See `docs/LEGAL_GAPS.md` in
+  prezenti/talent-engine.
 - **`termsUri` + `termsHash`** pin the exact wording. This is what makes the
   attestation mean something specific rather than reciting prose on-chain: the
-  hash is of the versioned `docs/SPONSORSHIP_TERMS.md` in
-  `prezenti/talent-engine`, and it matches the `terms_digest` the engine already
-  records with every acceptance.
+  hash is of the canonical dated terms release in `prezenti/talent-engine`, and
+  the first 12 hex characters match the `terms_digest` the engine records with
+  every application.
 - **`expiresAt`** is a Unix timestamp, 36 months after the programme ends.
-- **`monthsFundedAtSigning`** is the pro-rating anchor. The final figure lives
-  in the engine's operating ledger as `months_funded`.
+- **`monthsFundedAtSigning`** remains in the registered schema but is `0` for
+  the initial acceptance pledge. Actual months are known only at withdrawal or
+  term end, recorded in the engine's operating ledger as `months_funded`, and
+  carried by a replacement close-out attestation that references the original
+  UID.
 - **`coveredIncome`** is free text on purpose — it is the one term that will be
   argued about, and forcing it into an enum would hide the argument.
 
@@ -96,8 +102,11 @@ rather than writing to the wrong schema.
 ## Before any of this goes live
 
 `docs/LEGAL_GAPS.md` in `prezenti/talent-engine` lists eight open questions,
-Most of that list is now closed by drafting. Two things still land on this
-schema:
+Most of that list is now closed by drafting. The current terms release keeps
+four counsel questions as first-acceptance blockers: enforceability of the
+disclaimer, Prezenti's onward commitment, data-protection basis for scouting,
+and tax treatment of reimbursements/vendor offsets. Two things still land on
+this schema:
 
 - **Governing law and dispute resolution are deliberately absent.** The old
   values (`"Celo Community Governance"` and `"Celo Governance Proposals and
@@ -129,3 +138,9 @@ hardcoded, and it is now applied in two places that previously disagreed:
 
 `trialSchemaReady()` fails closed unless the schema UID is set, both recipients
 are valid addresses, and the derived expiry is in the future.
+
+Initial attestations use `monthsFundedAtSigning = 0`. Withdrawal, term end,
+cap satisfaction, expiry and material correction are handled by a replacement
+attestation that references the prior UID, followed by revocation of the
+superseded UID. The app must not ask an applicant to choose funded months at
+acceptance.

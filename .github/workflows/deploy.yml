@@ -24,6 +24,9 @@ jobs:
       - name: Install Dependencies
         run: yarn install --frozen-lockfile  # Ensures consistent installs
 
+      - name: Run Tests
+        run: yarn test --watchAll=false
+
       - name: Build React App
         run: yarn build
 

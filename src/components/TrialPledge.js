@@ -76,7 +76,6 @@ function pct(bp) {
 function TrialPledge() {
   const [{ wallet }, connect] = useConnectWallet();
   const [handle, setHandle] = useState('');
-  const [monthsFunded, setMonthsFunded] = useState(TRIAL_TERMS.termMonths);
   const [agreed, setAgreed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -97,10 +96,7 @@ function TrialPledge() {
     );
   }
 
-  const obligation =
-    (TRIAL_TERMS.giveBackBasisPoints * monthsFunded) /
-    TRIAL_TERMS.termMonths /
-    100;
+  const fullTermObligation = TRIAL_TERMS.giveBackBasisPoints / 100;
 
   const sign = async () => {
     setError(null);
@@ -128,7 +124,10 @@ function TrialPledge() {
         TRIAL_TERMS.communityFundBasisPoints,
         TRIAL_TERMS.capUsd,
         expiresAt(),
-        Number(monthsFunded),
+        // The registered schema has this legacy field, but actual months are
+        // not known at acceptance. Close-out replacement attestations carry the
+        // final value after withdrawal or term end.
+        0,
         TRIAL_TERMS.coveredIncome,
         TRIAL_TERMS.rofoNoticeDays,
         TRIAL_TERMS.termsUri,
@@ -188,8 +187,9 @@ function TrialPledge() {
           </p>
         )}
         <p>
-          It is revocable. If you withdraw from the programme, the recorded
-          months determine what is owed, and the attestation can be closed out.
+          It is revocable. If you withdraw from the programme, the actual months
+          funded are recorded later and this pledge is closed out with a
+          replacement attestation.
         </p>
       </div>
     );
@@ -213,10 +213,10 @@ function TrialPledge() {
             work — owed to Prezenti and to nobody else.
           </li>
           <li>
-            Prezenti separately commits to routing{' '}
-            <strong>{pct(TRIAL_TERMS.communityFundBasisPoints)}</strong> of what
-            it receives onward to the Celo Community Fund. That is Prezenti's
-            promise, not yours.
+            Prezenti separately commits to routing half of what it receives
+            onward to the Celo Community Fund — equivalent to{' '}
+            <strong>{pct(TRIAL_TERMS.communityFundBasisPoints)}</strong> of
+            covered income. That is Prezenti's promise, not yours.
           </li>
           <li>
             Capped at <strong>${TRIAL_TERMS.capUsd.toLocaleString()}</strong>,
@@ -239,7 +239,7 @@ function TrialPledge() {
         <p>
           Full terms:{' '}
           <a href={TRIAL_TERMS.termsUri} target="_blank" rel="noreferrer">
-            SPONSORSHIP_TERMS.md
+            current trial terms release
           </a>{' '}
           — pinned by content hash, so the words recorded on-chain cannot change
           under you.
@@ -256,24 +256,11 @@ function TrialPledge() {
         />
       </label>
 
-      <label>
-        Months funded at signing
-        <select
-          value={monthsFunded}
-          onChange={(e) => setMonthsFunded(Number(e.target.value))}
-        >
-          {Array.from({ length: TRIAL_TERMS.termMonths + 1 }, (_, i) => (
-            <option key={i} value={i}>
-              {i}
-            </option>
-          ))}
-        </select>
-      </label>
-
       <p>
-        On {monthsFunded} of {TRIAL_TERMS.termMonths} months, the pledge is{' '}
-        <strong>{obligation}%</strong>, capped at $
-        {TRIAL_TERMS.capUsd.toLocaleString()}.
+        The full-term pledge is <strong>{fullTermObligation}%</strong>, capped at $
+        {TRIAL_TERMS.capUsd.toLocaleString()}. If you withdraw early, the actual
+        months funded are recorded at withdrawal or term end and the pledge is
+        closed out with a replacement attestation.
       </p>
 
       <label>

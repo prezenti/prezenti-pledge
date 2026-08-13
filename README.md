@@ -9,7 +9,8 @@ The Prezenti Pledge is a commitment to contribute to Celo’s mission of creatin
 ## Features
 
 - **Wallet Integration**: Connect your Celo wallet seamlessly.
-- **Pledge Signing**: Sign the Prezenti Pledge with customizable details (e.g., amount, frequency, start date).
+- **Pledge Signing**: Sign the general Prezenti Pledge with customizable details.
+- **Trial Pledge**: `https://pledge.prezenti.xyz/#/trial` records the AI Builder Sponsorships pledge against the current talent-engine terms release.
 - **Pledge History**: View a list of previous pledges with links to the Celo explorer.
 
 ## For Pledgers: How to Sign the Pledge
@@ -55,6 +56,9 @@ Ready to make a commitment to Celo’s ecosystem? Follow these steps:
    ```bash
    git clone https://github.com/prezenti/prezenti-pledge.git
    cd prezenti-pledge
+   yarn install --frozen-lockfile
+   yarn test --watchAll=false
+   yarn build
    ```
 
 ---

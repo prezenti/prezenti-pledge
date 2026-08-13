@@ -34,7 +34,8 @@ export const TRIAL_TERMS = {
   // The builder's obligation, in full, and it runs to Prezenti only.
   giveBackBasisPoints: 200, // 2%
   prezentiBasisPoints: 200, // all of it
-  // Prezenti's *own* onward commitment.
+  // Prezenti's *own* onward commitment, expressed as bps of covered income:
+  // half of Prezenti's 2% receipts is equivalent to 1% of covered income.
   communityFundBasisPoints: 100,
 
   capUsd: 14000, // ten times the sponsorship
@@ -48,17 +49,16 @@ export const TRIAL_TERMS = {
   sunsetMonths: 36,
 
   coveredIncome:
-    'Revenue received through Celo by the sponsored project, and any grant, ' +
-    'prize or retro-funding income won with the sponsored work.',
+    'revenue actually received by the product through Celo, and any grant, ' +
+    'prize and retro-funding income won with the sponsored work.',
 
-  // The exact wording being agreed to, pinned by content hash. Recompute with:
-  //   python3 -c "from web3 import Web3;print(Web3.keccak(open('docs/SPONSORSHIP_TERMS.md','rb').read()).hex())"
-  // against prezenti/talent-engine at the commit below.
+  // The exact wording being agreed to, pinned by the same SHA-256 release hash
+  // that talent-engine stamps into the Tally acceptance option.
   termsUri:
-    'https://github.com/prezenti/talent-engine/blob/abb0d8d/docs/SPONSORSHIP_TERMS.md',
+    'https://github.com/prezenti/talent-engine/blob/main/docs/terms/prezenti-sponsorship-trial-2026-08-13.md',
   termsHash:
-    '0x54692e668f82d0155ea573f500692c92f6f6f33e3945dd3182a42bd54f778e42',
-  termsCommit: 'abb0d8d1ee4d929ffe747e99264e5563feb00506',
+    '0x33487d54a6719e9976731f5959d0dd4cf17e7a17abde347922461ca3fa022fe6',
+  termsVersion: '33487d54a671',
 };
 
 // 36 months after the cohort end, as a Unix timestamp. Derived rather than
@@ -86,12 +86,12 @@ export function trialSchemaReady() {
   );
 }
 
-// The three basis-point figures have to agree or the attestation misstates the
-// deal. Checked at render time rather than trusted.
+// The basis-point figures have to agree or the attestation misstates the deal.
+// Checked at render time rather than trusted.
 export function trialTermsConsistent() {
   const t = TRIAL_TERMS;
   return (
     t.prezentiBasisPoints === t.giveBackBasisPoints &&
-    t.communityFundBasisPoints <= t.giveBackBasisPoints
+    t.communityFundBasisPoints * 2 === t.giveBackBasisPoints
   );
 }
