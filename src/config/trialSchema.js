@@ -6,7 +6,8 @@
 // another batch of attestations that say the wrong thing and cannot be revoked,
 // which is the exact failure this file exists to prevent.
 
-export const TRIAL_SCHEMA_UID = '';
+export const TRIAL_SCHEMA_UID =
+  '0x6a5f8c4f58911419d3ae8a67df4f342eea92c0d2167b5b814eaa6d450e9135f4';
 
 export const TRIAL_TERMS = {
   programId: 'prezenti-sponsorship-trial',

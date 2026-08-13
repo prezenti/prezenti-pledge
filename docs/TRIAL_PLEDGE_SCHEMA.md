@@ -72,7 +72,15 @@ Notes on specific fields:
 - **`coveredIncome`** is free text on purpose — it is the one term that will be
   argued about, and forcing it into an enum would hide the argument.
 
-## Registering it
+## Registered
+
+**UID `0x6a5f8c4f58911419d3ae8a67df4f342eea92c0d2167b5b814eaa6d450e9135f4`**
+on Celo mainnet, revocable, no resolver, 15 fields.
+Transaction `0x86b9472ea9c9d6cf906285136ecbde041133010aee3c1ddef5488144e53cf45d`.
+Verified by reading `getSchema(uid)` back from the registry rather than
+trusting the receipt. It is wired into `src/config/trialSchema.js`.
+
+## How it was registered
 
 Schema registry on Celo: `0x4200000000000000000000000000000000000020`
 (`SchemaRegistry.register(string schema, address resolver, bool revocable)`).
