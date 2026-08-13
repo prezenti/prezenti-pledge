@@ -29,7 +29,8 @@ function PledgeSign() {
     amountCommitted: '',
     pledgeType: 'Revenue',
     startDate: '',
-    paymentFrequency: ''
+    paymentFrequency: '',
+    notes: ''
   });
   const executionDate = new Date().toISOString().split('T')[0];
   const pledgeId = `PLEDGE-${(pledges.length + 1).toString().padStart(4, '0')}`;
@@ -215,7 +216,13 @@ function PledgeSign() {
             { name: 'amountCommitted', type: 'string' },
             { name: 'pledgeType', type: 'string' },
             { name: 'startDate', type: 'string' },
-            { name: 'paymentFrequency', type: 'string' }
+            { name: 'paymentFrequency', type: 'string' },
+            // The registered schema declares five fields here. Encoding only
+            // four produced attestations that EAS accepted (it stores bytes
+            // without checking them against the schema) and that nothing can
+            // decode: every attestation written before this fix returns an
+            // empty `decodedDataJson` from the Celo EAS indexer.
+            { name: 'notes', type: 'string' }
           ]
         },
         { 
@@ -233,7 +240,7 @@ function PledgeSign() {
         pledgeId,
         [pledgor.entityName, pledgor.entityType, pledgor.jurisdiction, pledgor.address || ''],
         ["The Celo Community", CELO_GOVERNANCE_ADDRESS],
-        [pledgeDetails.amountCommitted, pledgeDetails.pledgeType, pledgeDetails.startDate || '', pledgeDetails.paymentFrequency || ''],
+        [pledgeDetails.amountCommitted, pledgeDetails.pledgeType, pledgeDetails.startDate || '', pledgeDetails.paymentFrequency || '', pledgeDetails.notes || ''],
         [executionDate],
         "Celo Community Governance",
         "Celo Governance Proposals and Arbitration"

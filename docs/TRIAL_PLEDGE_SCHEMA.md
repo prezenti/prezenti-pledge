@@ -1,0 +1,94 @@
+# Trial give-back pledge — new EAS schema
+
+The existing schema cannot record the AI Builder Sponsorships trial terms, and
+it cannot be altered. EAS schemas are immutable once registered, so this is a
+new schema alongside the old one. **Nothing about the existing pledge changes:**
+the old schema, its 29 attestations, and the current app flow all keep working
+exactly as they do now.
+
+## Why a new schema is necessary
+
+Three independent problems with `0xbd7d42cc…20b4`, all verified against the live
+Celo EAS indexer:
+
+1. **Its attestations do not decode.** The app encoded `pledgeDetails` as a
+   four-field tuple while the registered schema declares five (it has `notes`).
+   EAS stores bytes without validating them against the schema, so every one was
+   accepted — and `decodedDataJson` comes back empty for all of them. A control
+   query against two other Celo schemas decodes normally, so this is the data,
+   not the indexer. Fixed in `PledgeSign.js` for future generic pledges; the
+   existing 29 cannot be repaired, and `revocable: false` means they cannot be
+   withdrawn either.
+2. **The counterparty is hardcoded** to "The Celo Community" at the Celo
+   Governance address. The trial give-back runs 1% to Prezenti and 1% to the
+   Celo Community Fund — two legs, two parties, neither expressible.
+3. **There is nowhere to put the terms.** No cap, no sunset, no pro-rating, no
+   covered-income definition, no ROFO, no recipient, no programme identifier.
+   Putting them in `amountCommitted` as prose gives a pledge nobody can parse.
+
+## The schema to register
+
+```
+string programId,
+string recipientHandle,
+uint256 sponsorshipValueUsd,
+uint16 giveBackBasisPoints,
+address prezentiRecipient,
+uint16 prezentiBasisPoints,
+address communityFundRecipient,
+uint16 communityFundBasisPoints,
+uint256 capUsd,
+uint64 expiresAt,
+uint8 monthsFundedAtSigning,
+string coveredIncome,
+uint16 rofoNoticeDays,
+string termsUri,
+bytes32 termsHash
+```
+
+**Register it as `revocable: true`.** The old schema is irrevocable, which was a
+mistake: a good-faith commitment that sunsets after 36 months and pro-rates on
+withdrawal needs a way to be closed out. Irrevocability does not make a promise
+stronger, it just makes it impossible to correct.
+
+Notes on specific fields:
+
+- **Basis points, not percent strings.** `giveBackBasisPoints = 200` is 2%.
+  Splitting into `prezentiBasisPoints = 100` and
+  `communityFundBasisPoints = 100` records both legs explicitly, and the three
+  should be asserted to agree at signing time.
+- **`termsUri` + `termsHash`** pin the exact wording. This is what makes the
+  attestation mean something specific rather than reciting prose on-chain: the
+  hash is of the versioned `docs/SPONSORSHIP_TERMS.md` in
+  `prezenti/talent-engine`, and it matches the `terms_digest` the engine already
+  records with every acceptance.
+- **`expiresAt`** is a Unix timestamp, 36 months after the programme ends.
+- **`monthsFundedAtSigning`** is the pro-rating anchor. The final figure lives
+  in the engine's operating ledger as `months_funded`.
+- **`coveredIncome`** is free text on purpose — it is the one term that will be
+  argued about, and forcing it into an enum would hide the argument.
+
+## Registering it
+
+Schema registry on Celo: `0x4200000000000000000000000000000000000020`
+(`SchemaRegistry.register(string schema, address resolver, bool revocable)`).
+
+Easiest path is the UI at <https://celo.easscan.org/schema/create>. Paste the
+schema above, leave the resolver as the zero address, tick **revocable**, and
+sign from the Prezenti wallet.
+
+Then put the returned UID in `src/config/trialSchema.js` as `TRIAL_SCHEMA_UID`.
+The trial flow refuses to render until it is set, so a missing UID fails loudly
+rather than writing to the wrong schema.
+
+## Before any of this goes live
+
+`docs/LEGAL_GAPS.md` in `prezenti/talent-engine` lists eight open questions,
+three of which land directly on this schema: whether the attestation creates an
+enforceable obligation, whether the Celo Community Fund leg is a commitment to
+the Fund or a statement of intent, and what governing law and dispute
+resolution should say. The current values —
+`governingLaw = "Celo Community Governance"` and
+`disputeResolution = "Celo Governance Proposals and Arbitration"` — are almost
+certainly wrong for an obligation running from a builder to Prezenti, and they
+should not be carried into the new schema by default.
