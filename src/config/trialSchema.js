@@ -55,10 +55,10 @@ export const TRIAL_TERMS = {
   // The exact wording being agreed to, pinned by the same SHA-256 release hash
   // that talent-engine stamps into the Tally acceptance option.
   termsUri:
-    'https://github.com/prezenti/talent-engine/blob/main/docs/terms/prezenti-sponsorship-trial-2026-08-13-v2.md',
+    'https://github.com/prezenti/talent-engine/blob/main/docs/terms/prezenti-sponsorship-trial-2026-08-14-v3.md',
   termsHash:
-    '0x36e52079f1f90f70ca72b385e6ab727b3dda223870bed7cd36d79cd5f93632d1',
-  termsVersion: '36e52079f1f9',
+    '0xac1bffe5f24b5f88031afec9bfdbd58af43908a666c0aed114895b487b28445c',
+  termsVersion: 'ac1bffe5f24b',
 };
 
 // 36 months after the cohort end, as a Unix timestamp. Derived rather than

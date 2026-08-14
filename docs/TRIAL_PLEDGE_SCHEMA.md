@@ -143,6 +143,8 @@ are valid addresses, and the derived expiry is in the future.
 
 Initial attestations use `monthsFundedAtSigning = 0`. Withdrawal, term end,
 cap satisfaction, expiry and material correction are handled by a builder-signed
-replacement attestation that references the prior UID, followed by builder
-revocation of the superseded UID. The app must not ask an applicant to choose
-funded months at acceptance.
+replacement attestation that references the prior UID, followed by a separate
+builder revocation of the superseded UID. The app deliberately exposes these as
+separate actions: if replacement succeeds and revocation fails, the builder can
+retry revocation without signing another replacement. The app must not ask an
+applicant to choose funded months at acceptance.

@@ -164,8 +164,10 @@ function TrialPledge() {
   const [monthsFunded, setCloseoutMonthsFunded] = useState('');
   const [closeoutAgreed, setCloseoutAgreed] = useState(false);
   const [closeoutLoading, setCloseoutLoading] = useState(false);
+  const [revocationLoading, setRevocationLoading] = useState(false);
   const [closeoutError, setCloseoutError] = useState(null);
   const [replacementUid, setReplacementUid] = useState(null);
+  const [replacementUidForRevocation, setReplacementUidForRevocation] = useState('');
   const [revocationTxHash, setRevocationTxHash] = useState(null);
 
   // Fail closed. Signing trial terms into the wrong schema would produce
@@ -220,9 +222,10 @@ function TrialPledge() {
     }
   };
 
-  const closeOut = async () => {
+  const signReplacement = async () => {
     setCloseoutError(null);
     setReplacementUid(null);
+    setReplacementUidForRevocation('');
     setRevocationTxHash(null);
 
     const clean = cleanHandle(closeoutHandle);
@@ -249,13 +252,39 @@ function TrialPledge() {
         .send({ from });
       const replacementUidFromReceipt = uidFromReceipt(replacement, EAS_CONTRACT_ADDRESS);
       setReplacementUid(replacementUidFromReceipt);
+      setReplacementUidForRevocation(replacementUidFromReceipt);
+    } catch (e) {
+      setCloseoutError(e.message || String(e));
+    } finally {
+      setCloseoutLoading(false);
+    }
+  };
 
+  const revokeOriginal = async () => {
+    setCloseoutError(null);
+    setRevocationTxHash(null);
+
+    if (!UID_RE.test(originalUid)) return setCloseoutError('Original attestation UID is required.');
+    const knownReplacement = replacementUid || replacementUidForRevocation.trim();
+    if (!UID_RE.test(knownReplacement)) {
+      return setCloseoutError('Replacement attestation UID is required before revocation.');
+    }
+    if (!closeoutAgreed) {
+      return setCloseoutError('Confirm that the replacement is final before revoking.');
+    }
+
+    setRevocationLoading(true);
+    try {
+      const web3 = await walletWeb3();
+      if (!web3) return;
+      const from = wallet.accounts[0].address;
+      const eas = new web3.eth.Contract(EAS_ABI, EAS_CONTRACT_ADDRESS);
       const revoked = await eas.methods.revoke(revocationRequest(originalUid)).send({ from });
       setRevocationTxHash(revoked.transactionHash);
     } catch (e) {
       setCloseoutError(e.message || String(e));
     } finally {
-      setCloseoutLoading(false);
+      setRevocationLoading(false);
     }
   };
 
@@ -272,9 +301,9 @@ function TrialPledge() {
         </p>
         <ul>
           <li>
-            <strong>{pct(TRIAL_TERMS.giveBackBasisPoints)}</strong> of Celo
-            revenue and grant, prize or retro-funding income from the sponsored
-            work — owed to Prezenti and to nobody else.
+            <strong>{pct(TRIAL_TERMS.giveBackBasisPoints)}</strong> of{' '}
+            {TRIAL_TERMS.coveredIncome} This is owed to Prezenti and to nobody
+            else.
           </li>
           <li>
             Paid directly to the verified Prezenti Safe. No 0xSplits collector
@@ -385,8 +414,9 @@ function TrialPledge() {
       <p>
         Use this when you withdraw, reach the end of the term, hit the cap, or
         need to correct a material mistake. The replacement attestation records
-        the final months funded and references the original UID, then your
-        wallet revokes the superseded original attestation.
+        the final months funded and references the original UID. Revocation is a
+        separate second step, so retrying revocation never signs another
+        replacement.
       </p>
 
       <label>
@@ -422,37 +452,51 @@ function TrialPledge() {
       </label>
 
       <label>
+        Replacement attestation UID (paste it here before retrying revocation)
+        <input
+          type="text"
+          value={replacementUidForRevocation}
+          placeholder="0x…"
+          onChange={(e) => setReplacementUidForRevocation(e.target.value.trim())}
+        />
+      </label>
+
+      <label>
         <input
           type="checkbox"
           checked={closeoutAgreed}
           onChange={(e) => setCloseoutAgreed(e.target.checked)}
         />{' '}
-        I confirm this is the final months-funded value and I am revoking the
-        superseded pledge.
+        I confirm this is the final months-funded value. I will sign a
+        replacement first, then revoke the superseded pledge only after the
+        replacement exists.
       </label>
 
       {closeoutError && <p className="error">{closeoutError}</p>}
 
-      <button onClick={closeOut} disabled={closeoutLoading} className="connect-button">
-        {closeoutLoading
-          ? 'Closing out…'
-          : wallet
-          ? 'Sign replacement and revoke original'
-          : 'Connect wallet'}
-      </button>
+      <div className="button-row">
+        <button onClick={signReplacement} disabled={closeoutLoading} className="connect-button">
+          {closeoutLoading ? 'Signing replacement…' : wallet ? 'Sign replacement' : 'Connect wallet'}
+        </button>
+        <button onClick={revokeOriginal} disabled={revocationLoading} className="connect-button">
+          {revocationLoading ? 'Revoking…' : wallet ? 'Revoke original' : 'Connect wallet'}
+        </button>
+      </div>
 
-      {replacementUid && (
+      {(replacementUid || revocationTxHash) && (
         <div className="info-section">
-          <p>
-            Replacement attestation:{' '}
-            <a
-              href={`https://celo.easscan.org/attestation/view/${replacementUid}`}
-              target="_blank"
-              rel="noreferrer"
-            >
-              {replacementUid.slice(0, 10)}…{replacementUid.slice(-6)}
-            </a>
-          </p>
+          {replacementUid && (
+            <p>
+              Replacement attestation:{' '}
+              <a
+                href={`https://celo.easscan.org/attestation/view/${replacementUid}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                {replacementUid.slice(0, 10)}…{replacementUid.slice(-6)}
+              </a>
+            </p>
+          )}
           {revocationTxHash ? (
             <p>
               Revocation transaction:{' '}
@@ -466,8 +510,8 @@ function TrialPledge() {
             </p>
           ) : (
             <p>
-              Replacement signed. If revocation failed, retry so the original
-              UID is not left active.
+              Replacement signed. Use Revoke original to finish close-out; if
+              that transaction fails, retry the revocation step only.
             </p>
           )}
         </div>

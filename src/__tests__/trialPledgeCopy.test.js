@@ -18,17 +18,21 @@ test('pledge copy states the onward commitment correctly', () => {
     path.join(__dirname, '..', 'components', 'TrialPledge.js'),
     'utf8'
   );
+  expect(source).toContain('TRIAL_TERMS.coveredIncome');
   expect(source).toContain('half of what it receives');
   expect(source).toContain('covered income');
   expect(source).toContain('No 0xSplits collector');
 });
 
-test('close-out flow signs replacement and revokes original', () => {
+test('close-out flow separates replacement from revoke-only retry', () => {
   const source = fs.readFileSync(
     path.join(__dirname, '..', 'components', 'TrialPledge.js'),
     'utf8'
   );
-  expect(source).toContain('Sign replacement and revoke original');
-  expect(source).toContain('refUID');
+  expect(source).toContain('Sign replacement');
+  expect(source).toContain('Revoke original');
+  expect(source).toContain('Replacement attestation UID');
+  expect(source).not.toContain('Sign replacement and revoke original');
+  expect(source).toContain('attest(attestationRequest(data, originalUid))');
   expect(source).toContain('revoke(revocationRequest(originalUid))');
 });
