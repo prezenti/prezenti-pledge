@@ -1,28 +1,98 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { request, gql } from 'graphql-request';
-import { TRIAL_SCHEMA_UID } from '../config/trialSchema';
+import { ethers } from 'ethers';
+import { EAS_CONTRACT_ADDRESS, TRIAL_SCHEMA_UID } from '../config/trialSchema';
 import {
   formatUnixDate,
   normalizeTrialAttestation,
   shortenHex,
 } from '../lib/trialPledgeData';
 
-const EAS_SUBGRAPH_URL = 'https://celo.easscan.org/graphql';
+const CELO_RPC_URL = 'https://forno.celo.org';
+const ATTESTED_TOPIC = ethers.id('Attested(address,address,bytes32,bytes32)');
+const TRIAL_LEDGER_START_BLOCK = 79673000;
+const LOG_RANGE = 4999;
 
-const TRIAL_PLEDGORS_QUERY = gql`
-  query TrialPledgors($where: AttestationWhereInput) {
-    attestations(take: 25, orderBy: { time: desc }, where: $where) {
-      id
-      attester
-      recipient
-      data
-      time
-      expirationTime
-      revocationTime
-      revoked
-    }
+const EAS_READ_ABI = [
+  'function getAttestation(bytes32 uid) view returns (tuple(bytes32 uid, bytes32 schema, uint64 time, uint64 expirationTime, uint64 revocationTime, bytes32 refUID, address recipient, address attester, bool revocable, bytes data) attestation)',
+];
+
+const easReadInterface = new ethers.Interface(EAS_READ_ABI);
+
+async function rpc(method, params = []) {
+  const response = await fetch(CELO_RPC_URL, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ jsonrpc: '2.0', id: 1, method, params }),
+  });
+  const json = await response.json();
+  if (json.error) throw new Error(json.error.message || 'Celo RPC error');
+  return json.result;
+}
+
+function blockHex(blockNumber) {
+  return `0x${blockNumber.toString(16)}`;
+}
+
+async function fetchTrialLogs() {
+  const latest = Number(await rpc('eth_blockNumber'));
+  const logs = [];
+  for (
+    let fromBlock = TRIAL_LEDGER_START_BLOCK;
+    fromBlock <= latest;
+    fromBlock += LOG_RANGE + 1
+  ) {
+    const toBlock = Math.min(fromBlock + LOG_RANGE, latest);
+    const chunk = await rpc('eth_getLogs', [
+      {
+        fromBlock: blockHex(fromBlock),
+        toBlock: blockHex(toBlock),
+        address: EAS_CONTRACT_ADDRESS,
+        topics: [ATTESTED_TOPIC, null, null, TRIAL_SCHEMA_UID],
+      },
+    ]);
+    logs.push(...chunk);
   }
-`;
+  return logs;
+}
+
+async function fetchAttestation(log) {
+  const data = easReadInterface.encodeFunctionData('getAttestation', [log.data]);
+  const result = await rpc('eth_call', [
+    { to: EAS_CONTRACT_ADDRESS, data },
+    'latest',
+  ]);
+  const attestation = easReadInterface.decodeFunctionResult(
+    'getAttestation',
+    result
+  )[0];
+  if (attestation.schema.toLowerCase() !== TRIAL_SCHEMA_UID.toLowerCase()) {
+    return null;
+  }
+  return {
+    id: attestation.uid,
+    attester: attestation.attester,
+    recipient: attestation.recipient,
+    data: attestation.data,
+    time: attestation.time,
+    expirationTime: attestation.expirationTime,
+    revocationTime: attestation.revocationTime,
+    revoked: Number(attestation.revocationTime) > 0,
+    transactionHash: log.transactionHash,
+  };
+}
+
+async function fetchTrialPledgors() {
+  const logs = await fetchTrialLogs();
+  const rows = await Promise.all(logs.map((log) => fetchAttestation(log)));
+  const records = rows
+    .filter(Boolean)
+    .map((attestation) => normalizeTrialAttestation(attestation))
+    .filter(Boolean);
+
+  return Array.from(
+    new Map(records.map((record) => [record.uid, record])).values()
+  ).sort((a, b) => b.signedAt - a.signedAt);
+}
 
 function TrialPledgors({ refreshKey }) {
   const [records, setRecords] = useState([]);
@@ -33,14 +103,7 @@ function TrialPledgors({ refreshKey }) {
     setLoading(true);
     setError(null);
     try {
-      const response = await request(EAS_SUBGRAPH_URL, TRIAL_PLEDGORS_QUERY, {
-        where: { schemaId: { equals: TRIAL_SCHEMA_UID } },
-      });
-      setRecords(
-        response.attestations
-          .map((attestation) => normalizeTrialAttestation(attestation))
-          .filter(Boolean)
-      );
+      setRecords(await fetchTrialPledgors());
     } catch (e) {
       setError(e.message || 'Unable to load pledgors');
     } finally {
@@ -108,6 +171,15 @@ function TrialPledgors({ refreshKey }) {
                 >
                   {shortenHex(record.uid, 8, 6)}
                 </a>
+                {record.transactionHash && (
+                  <a
+                    href={`https://celoscan.io/tx/${record.transactionHash}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    tx {shortenHex(record.transactionHash, 8, 6)}
+                  </a>
+                )}
               </div>
               <span className={`trial-pledger-status ${record.status.toLowerCase()}`}>
                 {record.status}

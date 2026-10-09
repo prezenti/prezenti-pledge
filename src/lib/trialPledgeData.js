@@ -86,6 +86,7 @@ export function normalizeTrialAttestation(attestation, nowSeconds = Date.now() /
     expirationTime,
     revocationTime,
     status: revoked ? 'Revoked' : expired ? 'Expired' : 'Active',
+    transactionHash: attestation.transactionHash || '',
     pledge,
   };
 }

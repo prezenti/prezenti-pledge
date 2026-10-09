@@ -51,6 +51,7 @@ test('normalizes EAS attestation rows for display', () => {
       expirationTime: '1893196800',
       revocationTime: '0',
       revoked: false,
+      transactionHash: '0x' + 'ef'.repeat(32),
     },
     1800000000
   );
@@ -58,6 +59,7 @@ test('normalizes EAS attestation rows for display', () => {
   expect(record.status).toBe('Active');
   expect(record.pledge.recipientHandle).toBe('spagero763');
   expect(record.signedAt).toBe(1790000000);
+  expect(record.transactionHash).toBe('0x' + 'ef'.repeat(32));
 });
 
 test('marks revoked rows and ignores undecodable rows', () => {
