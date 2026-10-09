@@ -1,4 +1,8 @@
-import { TRIAL_TERMS, trialTermsConsistent } from '../config/trialSchema';
+import {
+  EAS_CONTRACT_ADDRESS,
+  TRIAL_TERMS,
+  trialTermsConsistent,
+} from '../config/trialSchema';
 
 const CURRENT_TERMS_HASH =
   '0xac1bffe5f24b5f88031afec9bfdbd58af43908a666c0aed114895b487b28445c';
@@ -15,5 +19,11 @@ test('onward commitment is half of Prezenti receipts', () => {
   expect(trialTermsConsistent()).toBe(true);
   expect(TRIAL_TERMS.communityFundBasisPoints * 2).toBe(
     TRIAL_TERMS.giveBackBasisPoints
+  );
+});
+
+test('trial pledge uses the Celo EAS contract matching the registered schema', () => {
+  expect(EAS_CONTRACT_ADDRESS).toBe(
+    '0x4200000000000000000000000000000000000021'
   );
 });

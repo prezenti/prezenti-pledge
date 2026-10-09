@@ -97,9 +97,12 @@ Easiest path is the UI at <https://celo.easscan.org/schema/create>. Paste the
 schema above, leave the resolver as the zero address, tick **revocable**, and
 sign from the Prezenti wallet.
 
-Then put the returned UID in `src/config/trialSchema.js` as `TRIAL_SCHEMA_UID`.
-The trial flow refuses to render until it is set, so a missing UID fails loudly
-rather than writing to the wrong schema.
+Then put the returned UID in `src/config/trialSchema.js` as `TRIAL_SCHEMA_UID`,
+and keep `EAS_CONTRACT_ADDRESS` pointed at the matching Celo EAS contract,
+`0x4200000000000000000000000000000000000021`. The older generic pledge uses a
+different EAS instance; sending this trial schema to that contract reverts with
+`InvalidSchema()`. The trial flow refuses to render until the UID is set, so a
+missing UID fails loudly rather than writing to the wrong schema.
 
 ## Before any of this goes live
 

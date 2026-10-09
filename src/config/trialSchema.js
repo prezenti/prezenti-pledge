@@ -8,8 +8,10 @@
 export const TRIAL_SCHEMA_UID =
   '0x6a5f8c4f58911419d3ae8a67df4f342eea92c0d2167b5b814eaa6d450e9135f4';
 
-// EAS on Celo. Same contract the generic pledge uses.
-export const EAS_CONTRACT_ADDRESS = '0x72E1d8ccf5299fb36fEfD8CC4394B8ef7e98Af92';
+// Celo EAS v1.4. The trial schema below is registered in this EAS instance's
+// registry at 0x4200000000000000000000000000000000000020. The generic pledge
+// still uses the older EAS contract because its legacy schema lives there.
+export const EAS_CONTRACT_ADDRESS = '0x4200000000000000000000000000000000000021';
 export const CELO_CHAIN_ID = 42220;
 
 // Where the two legs go. `PREZENTI_RECIPIENT` is the only party the builder
