@@ -33,6 +33,15 @@
   --account-center-app-btn-font-family: 'DM Sans', sans-serif;;
 }
 
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  overflow-x: hidden;
+}
+
 body {
   margin: 0;
   font-family: 'DM Sans', sans-serif;
@@ -43,6 +52,14 @@ body {
 
 .App {
   min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+main {
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -142,7 +159,8 @@ body {
   background: var(--cream);
   padding: 2rem;
   border-radius: 12px;
-  margin: 2rem;
+  margin: 2rem auto;
+  width: min(600px, calc(100% - 2rem));
   max-width: 600px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   border: 1px solid var(--light-mint);
@@ -358,6 +376,32 @@ footer {
   font-weight: 100;
 }
 
+.pledge-container label {
+  display: block;
+  margin: 1rem 0 0.45rem;
+  line-height: 1.45;
+}
+
+.pledge-container label input[type="text"],
+.pledge-container label input[type="number"] {
+  display: block;
+  width: 100%;
+  max-width: 22rem;
+  margin-top: 0.35rem;
+  padding: 0.45rem 0.55rem;
+  border: 1px solid var(--mint);
+  border-radius: 4px;
+  background: white;
+  color: var(--dark-forest);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+}
+
+.pledge-container label input[type="checkbox"] {
+  margin-right: 0.35rem;
+  vertical-align: middle;
+}
+
 .disclaimer {
   font-family: 'DM Sans', sans-serif;
   font-size: 0.9rem;
@@ -406,7 +450,8 @@ footer {
   background: var(--cream);
   padding: 2rem;
   border-radius: 12px;
-  margin: 2rem;
+  margin: 2rem auto;
+  width: min(600px, calc(100% - 2rem));
   max-width: 600px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   border: 1px solid var(--light-mint);
@@ -464,6 +509,123 @@ footer {
   text-decoration: underline;
 }
 
+.trial-pledgers {
+  margin: 1.75rem 0;
+  padding: 1rem 0;
+  border-top: 1px solid var(--light-mint);
+  border-bottom: 1px solid var(--light-mint);
+}
+
+.trial-pledgers-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.trial-pledgers-heading h3 {
+  margin: 0;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
+  color: var(--dark-forest);
+}
+
+.trial-pledgers-heading p {
+  margin: 0.2rem 0 0;
+  color: var(--dark-forest);
+  opacity: 0.72;
+  font-size: 0.9rem;
+}
+
+.secondary-button {
+  background: transparent;
+  color: var(--dark-forest);
+  border: 1px solid var(--mint);
+  padding: 0.45rem 0.8rem;
+}
+
+.secondary-button:hover {
+  background: var(--light-mint);
+  color: var(--dark-forest);
+}
+
+.trial-pledgers-empty {
+  margin: 0;
+  color: var(--dark-forest);
+  opacity: 0.72;
+}
+
+.trial-pledgers-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.trial-pledger-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.85rem;
+  border: 1px solid var(--light-mint);
+  border-radius: 8px;
+  background: rgba(180, 219, 212, 0.2);
+}
+
+.trial-pledger-row strong,
+.trial-pledger-row span,
+.trial-pledger-row a {
+  display: block;
+  color: var(--dark-forest);
+}
+
+.trial-pledger-row strong {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.trial-pledger-row span,
+.trial-pledger-row a {
+  font-size: 0.88rem;
+}
+
+.trial-pledger-row a {
+  text-decoration: none;
+  font-family: monospace;
+}
+
+.trial-pledger-row a:hover {
+  color: var(--orange);
+  text-decoration: underline;
+}
+
+.trial-pledger-status {
+  justify-self: end;
+  width: fit-content;
+  min-width: 4.8rem;
+  text-align: center;
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--mint);
+  font-size: 0.78rem !important;
+  font-weight: 600;
+}
+
+.trial-pledger-status.active {
+  color: var(--dark-forest);
+  background: var(--light-mint);
+}
+
+.trial-pledger-status.revoked,
+.trial-pledger-status.expired {
+  color: #8a2112;
+  background: #fde1d7;
+  border-color: var(--peach);
+}
+
 .governance-address {
   font-family: monospace;
   font-weight: 100;
@@ -474,6 +636,8 @@ footer {
 @media (max-width: 768px) {
   .pledge-container {
     padding: 0.5rem;
+    margin: 1rem auto;
+    width: calc(100% - 1rem);
     max-width: 400px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     border: 1px solid var(--light-mint);
@@ -481,7 +645,22 @@ footer {
 
   .previous-pledges-container {
     padding: 0.5rem;
+    margin: 1rem auto;
+    width: calc(100% - 1rem);
     max-width: 400px;
+  }
+
+  .trial-pledgers-heading {
+    align-items: flex-start;
+  }
+
+  .trial-pledger-row {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .trial-pledger-status {
+    justify-self: start;
   }
 
   .header-content {

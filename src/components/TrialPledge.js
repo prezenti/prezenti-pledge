@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useConnectWallet } from '@web3-onboard/react';
 import Web3 from 'web3';
 import { ATTESTED_EVENT_ABI, uidFromReceipt } from '../lib/attestation';
+import { TRIAL_SCHEMA_TYPES } from '../lib/trialPledgeData';
+import TrialPledgors from './TrialPledgors';
 import {
   TRIAL_SCHEMA_UID,
   EAS_CONTRACT_ADDRESS,
@@ -76,27 +78,6 @@ const EAS_ABI = [
   ATTESTED_EVENT_ABI,
 ];
 
-// Mirrors the registered schema exactly. If these drift, the attestation
-// encodes bytes nothing can decode -- which is what happened to all 29
-// attestations under the original schema.
-const SCHEMA_TYPES = [
-  { name: 'programId', type: 'string' },
-  { name: 'recipientHandle', type: 'string' },
-  { name: 'sponsorshipValueUsd', type: 'uint256' },
-  { name: 'giveBackBasisPoints', type: 'uint16' },
-  { name: 'prezentiRecipient', type: 'address' },
-  { name: 'prezentiBasisPoints', type: 'uint16' },
-  { name: 'communityFundRecipient', type: 'address' },
-  { name: 'communityFundBasisPoints', type: 'uint16' },
-  { name: 'capUsd', type: 'uint256' },
-  { name: 'expiresAt', type: 'uint64' },
-  { name: 'monthsFundedAtSigning', type: 'uint8' },
-  { name: 'coveredIncome', type: 'string' },
-  { name: 'rofoNoticeDays', type: 'uint16' },
-  { name: 'termsUri', type: 'string' },
-  { name: 'termsHash', type: 'bytes32' },
-];
-
 function pct(bp) {
   return `${bp / 100}%`;
 }
@@ -123,7 +104,7 @@ function encodeTrialData(web3, handle, monthsFunded) {
     TRIAL_TERMS.termsUri,
     TRIAL_TERMS.termsHash,
   ];
-  return web3.eth.abi.encodeParameters(SCHEMA_TYPES, values);
+  return web3.eth.abi.encodeParameters(TRIAL_SCHEMA_TYPES, values);
 }
 
 function attestationRequest(data, refUID = ZERO_UID) {
@@ -407,6 +388,8 @@ function TrialPledge() {
       <button onClick={sign} disabled={loading} className="connect-button">
         {loading ? 'Signing…' : wallet ? 'Sign the pledge' : 'Connect wallet'}
       </button>
+
+      <TrialPledgors refreshKey={`${uid || ''}:${replacementUid || ''}:${revocationTxHash || ''}`} />
 
       <hr />
 
