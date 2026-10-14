@@ -1,6 +1,7 @@
 import { ethers } from 'ethers';
 import {
   decodeTrialPledgeData,
+  displayRecipientHandle,
   normalizeTrialAttestation,
   shortenHex,
   TRIAL_SCHEMA_TYPES,
@@ -76,6 +77,15 @@ test('marks revoked rows and ignores undecodable rows', () => {
 
   expect(revoked.status).toBe('Revoked');
   expect(normalizeTrialAttestation({ data: '0xdeadbeef' })).toBeNull();
+});
+
+test('normalizes submitted GitHub URLs for ledger display', () => {
+  expect(displayRecipientHandle('https://github.com/spagero763')).toBe(
+    'spagero763'
+  );
+  expect(displayRecipientHandle('@investorphem')).toBe('investorphem');
+  expect(displayRecipientHandle('Oshioke-Salaki')).toBe('Oshioke-Salaki');
+  expect(displayRecipientHandle('')).toBe('Unknown');
 });
 
 test('shortens long hex strings for compact ledger rows', () => {

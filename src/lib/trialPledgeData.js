@@ -53,6 +53,22 @@ export function decodeTrialPledgeData(data) {
   }
 }
 
+export function displayRecipientHandle(value) {
+  const raw = String(value || '').trim();
+  if (!raw) return 'Unknown';
+
+  try {
+    const url = new URL(raw);
+    if (url.hostname.toLowerCase().replace(/^www\./, '') === 'github.com') {
+      return url.pathname.split('/').filter(Boolean)[0] || raw;
+    }
+  } catch (e) {
+    // Handles are normally not URLs.
+  }
+
+  return raw.replace(/^@/, '');
+}
+
 export function shortenHex(value, left = 6, right = 4) {
   if (!value || value.length <= left + right + 3) return value || '';
   return `${value.slice(0, left)}...${value.slice(-right)}`;
